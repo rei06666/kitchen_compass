@@ -1,21 +1,22 @@
-//requireでexpressモジュールを読み込む
 const express = require('express');
-//expressモジュールを実体化して、定数appに代入
+const userRoutes = require('./routes/userRoutes');
+const ingredientRoutes = require('./routes/ingredientRoutes');
+const verifyCodeRoutes = require('./routes/verifyCodeRoutes');
+const verifyToken = require('./middlewate/authMiddlewate');
+require('dotenv').config();
+const port = process.env.PORT;
+
 const app = express();
-//ポート番号を指定
-const port = 3001;
 
-//'/'パスにGET要求があった際に実行する処理
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
-
-//'/api'パスにGET要求があった際に実行する処理
-app.get('/api', (req, res) => {
-    res.json({message: "Hello World"});
-  });
-
-//3000ポートでlisten
 app.listen(port, () => {
-  console.log(`listening on *:${port}`);
+  console.log(`Example app listening on port ${port}`)
 })
+
+app.use(express.json()); // JSONリクエストを扱えるようにする
+// app.use(verifyToken); // トークンの検証ミドルウェアを使用
+app.use(`/api/${process.env.API_VERSION}/user`, userRoutes); 
+app.use(`/api/${process.env.API_VERSION}/verify-code`, verifyCodeRoutes); 
+app.use(`/api/${process.env.API_VERSION}/ingredient`, ingredientRoutes); 
+
+
+module.exports = app;

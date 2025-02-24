@@ -6,13 +6,6 @@ import App_title from "../component/App_title"
 export default function SendVerification() {
 
     const navigate = useNavigate();
-
-    const isValid = (data) => {
-        console.log(data);
-      };
-    const isInValid = (errors) => {
-        console.log(errors);
-    };
     
     const {
         register,
@@ -23,8 +16,30 @@ export default function SendVerification() {
         mode: 'onChange',
     });
 
-    const sendVerification = () => {
-        navigate("/password/reset")
+    const sendVerification = async (data) => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_API_PATH}/verify-code`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: data.name
+                }),
+            });
+    
+            if (!response.ok) {
+                throw new Error();
+            }
+    
+            const resultText = "メールアドレスに確認コードを送信しました";
+            navigate("/password/reset", { state: {success: resultText, name: data.name }});
+
+        } catch (error) {
+            console.error(error);
+            const errorText = "確認コードを送信に失敗しました";
+            navigate("/", { state: {error: errorText }});
+        }
     }
 
     const backToSignin = () => {
@@ -39,7 +54,7 @@ export default function SendVerification() {
                     <App_title txt="Kitchen Compass" src={app_logo} />
                     <div className="container mx-auto w-2/3 rounded-sm shadow-md bg-orange-200">
                         <form
-                        onSubmit={handleSubmit(isValid, isInValid)}
+                        onSubmit={handleSubmit(sendVerification)}
                         className="p-2"
                         >
                             <div className="flex w-full flex-col">
@@ -59,23 +74,6 @@ export default function SendVerification() {
                                 </div>
                             )}
                         </div>
-                        <div className="flex w-full flex-col  mt-5">
-                            <label className="text-[12px] font-KonkhmerSleokchher text-gray-950" htmlFor="email">
-                            Email
-                            </label>
-                            <input
-                            {...register("email", { required: "メールアドレスを入力してください" })}
-                            className="rounded-md border px-2 py-0.5 focus:border-2 focus:border-lime-400 focus:outline-none"
-                            type="email"
-                            name="email"
-                            placeholder="value"
-                            />
-                            {errors.email && (
-                                <div className="text-[10px] font-KonkhmerSleokchher py-0.5 text-rose-600">
-                                {errors.email.message}
-                                </div>
-                            )}
-                        </div>
                         <div class="flex px-10">
                             <button
                                 className="text-[12px] w-full mt-8 px-2 py-0.5 font-KonkhmerSleokchher text-black hover:text-stone-700" onClick={backToSignin}
@@ -84,7 +82,7 @@ export default function SendVerification() {
                                 Cancel
                             </button>
                             <button
-                                className="text-[12px] w-full rounded-lg mt-8 bg-stone-950 hover:bg-stone-700 px-2 py-0.5 font-KonkhmerSleokchher text-white" onClick={sendVerification}
+                                className="text-[12px] w-full rounded-lg mt-8 bg-stone-950 hover:bg-stone-700 px-2 py-0.5 font-KonkhmerSleokchher text-white"
                                 type="submit"
                             >
                                 確認コードを送信

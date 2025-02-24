@@ -12,13 +12,6 @@ export default function Signin() {
 
     const navigate = useNavigate();
     const location = useLocation();
-
-    const isValid = (data) => {
-        console.log(data);
-      };
-    const isInValid = (errors) => {
-        console.log(errors);
-    };
     
     const {
         register,
@@ -29,8 +22,36 @@ export default function Signin() {
         mode: 'onChange',
     });
 
-    const signin = () => {
-        console.log("login button")
+    const signIn = async (data) => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_API_PATH}/user/signin`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: data.name,
+                    password: data.password
+                }),
+            });
+    
+            if (!response.ok) {
+                throw new Error();
+            }
+
+            
+            const responseJson = await response.json()
+            const accessToken = responseJson.accessToken
+            // accessTokenをローカルストレージに保存
+            localStorage.setItem('accessToken', accessToken);
+            console.log("login success")
+    
+            // navigate("/", { state: {success: resultText }});
+        } catch (error) {
+            console.error(error);
+            const errorText = "ログインに失敗しました";
+            navigate("/", { state: {error: errorText }});
+        }
     }
 
     const goToVerification = () => {
@@ -47,7 +68,9 @@ export default function Signin() {
             <div className="mx-auto max-w-lg py-[10vh]">
                 <div>
                     <App_title txt="Kitchen Compass" src={app_logo} />
-                    <div className="font-bold font-KonkhmerSleokchher text-center p-2 text-emerald-400">{location.state}</div>
+                    <div className={`font-bold font-KonkhmerSleokchher text-center p-2 ${location.state?.error ? 'text-rose-600' : 'text-emerald-400'}`}>
+                        {location.state?.success || location.state?.error}
+                    </div>
                     <div className="container mx-auto w-2/3 rounded-sm shadow-md bg-orange-200">
                         <div className="flex">
                             <img src={broccoli_logo} className="w-1/10 h-[40px] mx-auto m-2" />
@@ -55,7 +78,7 @@ export default function Signin() {
                             <img src={bread_logo} className="w-1/10 h-[40px] mx-auto m-2" />
                         </div>
                         <form
-                        onSubmit={handleSubmit(isValid, isInValid)}
+                        onSubmit={handleSubmit(signIn)}
                         className="p-2"
                         >
                         <div className="flex w-full flex-col">
@@ -80,7 +103,19 @@ export default function Signin() {
                             Password
                             </label>
                             <input
-                            {...register("password", { required: "パスワードを入力してください" })}
+                            {...register("password", { 
+                                required: "パスワードを入力してください",
+                                minLength: {
+                                    value: 8,
+                                    message: "パスワードは8文字以上である必要があります"
+                                },
+                                validate: {
+                                    hasUpperCase: value => /[A-Z]/.test(value) || "パスワードには大文字を含める必要があります",
+                                    hasLowerCase: value => /[a-z]/.test(value) || "パスワードには小文字を含める必要があります",
+                                    hasNumber: value => /[0-9]/.test(value) || "パスワードには数字を含める必要があります",
+                                    hasSymbol: value => /[!@#$%^&*(),.?":{}|<>]/.test(value) || "パスワードには記号を含める必要があります"
+                                }
+                            })}
                             className="rounded-md border px-2 py-0.5 focus:border-2 focus:border-lime-400 focus:outline-none"
                             type="password"
                             name="password"
@@ -93,9 +128,8 @@ export default function Signin() {
                             )}
                         </div>
                         <button
-                            className="w-full rounded-lg mt-8 bg-stone-950 hover:bg-stone-700 px-2 py-0.5 font-KonkhmerSleokchher text-white "
+                            className="w-full rounded-lg mt-8 bg-stone-950 hover:bg-stone-700 px-2 py-0.5 font-KonkhmerSleokchher text-white"
                             type="submit"
-                            onClick={signin}
                         >
                             Sign In
                         </button>

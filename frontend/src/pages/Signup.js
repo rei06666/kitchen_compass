@@ -6,13 +6,6 @@ import App_title from "../component/App_title"
 export default function Signup() {
 
     const navigate = useNavigate();
-
-    const isValid = (data) => {
-        console.log(data);
-      };
-    const isInValid = (errors) => {
-        console.log(errors);
-    };
     
     const {
         register,
@@ -23,10 +16,31 @@ export default function Signup() {
         mode: 'onChange',
     });
 
-    const registerAccount = () => {
-        console.log("register account")
-        const result = "アカウントが作成されました"
-        navigate("/", {state: result})
+    const registerAccount = async (data) => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_API_PATH}/user/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: data.email,
+                    name: data.name,
+                    password: data.password
+                }),
+            });
+    
+            if (!response.ok) {
+                throw new Error();
+            }
+    
+            const resultText = "アカウント作成に成功しました";
+            navigate("/", { state: {success: resultText }});
+        } catch (error) {
+            console.error(error);
+            const errorText = "アカウント作成に失敗しました";
+            navigate("/", { state: {error: errorText }});
+        }
     }
 
     const backToSignin = () => {
@@ -41,7 +55,7 @@ export default function Signup() {
                     <App_title txt="Kitchen Compass" src={app_logo} />
                     <div className="container mx-auto w-2/3 rounded-sm shadow-md bg-orange-200">
                         <form
-                        onSubmit={handleSubmit(isValid, isInValid)}
+                        onSubmit={handleSubmit(registerAccount)}
                         className="p-2"
                         >
                         <div className="flex w-full flex-col">
@@ -83,7 +97,19 @@ export default function Signup() {
                             Password
                             </label>
                             <input
-                            {...register("password", { required: "パスワードを入力してください" })}
+                            {...register("password", { 
+                                required: "パスワードを入力してください",
+                                minLength: {
+                                    value: 8,
+                                    message: "パスワードは8文字以上である必要があります"
+                                },
+                                validate: {
+                                    hasUpperCase: value => /[A-Z]/.test(value) || "パスワードには大文字を含める必要があります",
+                                    hasLowerCase: value => /[a-z]/.test(value) || "パスワードには小文字を含める必要があります",
+                                    hasNumber: value => /[0-9]/.test(value) || "パスワードには数字を含める必要があります",
+                                    hasSymbol: value => /[!@#$%^&*(),.?":{}|<>]/.test(value) || "パスワードには記号を含める必要があります"
+                                }
+                            })}
                             className="rounded-md border px-2 py-0.5 focus:border-2 focus:border-lime-400 focus:outline-none"
                             type="password"
                             name="password"
@@ -96,7 +122,7 @@ export default function Signup() {
                             )}
                         </div>
                         <button
-                            className="w-full rounded-lg mt-8 bg-stone-950 hover:bg-stone-700 px-2 py-0.5 font-KonkhmerSleokchher text-white" onClick={registerAccount}
+                            className="w-full rounded-lg mt-8 bg-stone-950 hover:bg-stone-700 px-2 py-0.5 font-KonkhmerSleokchher text-white"
                             type="submit"
                         >
                             Register
