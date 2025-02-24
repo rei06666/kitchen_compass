@@ -44,9 +44,9 @@ export default function Signin() {
             const accessToken = responseJson.accessToken
             // accessTokenをローカルストレージに保存
             localStorage.setItem('accessToken', accessToken);
-            console.log("login success")
+            localStorage.setItem('kitchenCompassUserName', data.name);
     
-            // navigate("/", { state: {success: resultText }});
+            navigate("/ingredients");
         } catch (error) {
             console.error(error);
             const errorText = "ログインに失敗しました";
