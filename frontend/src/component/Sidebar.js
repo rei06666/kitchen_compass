@@ -11,7 +11,7 @@ const Sidebar = (props) => {
 
     return (
         // レスポンシブデザインのため、md:w-[8%] md:blockを追加
-        <div className="hidden md:w-[8%] md:block h-screen  bg-orange-400 text-black">
+        <div className="hidden fixed md:w-[8%] md:block h-screen  bg-orange-400 text-black">
             <div className="p-4">
                 <img src={props.src} className="w-2/3 mx-auto" />
             </div>

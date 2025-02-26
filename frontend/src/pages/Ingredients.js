@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 import Sidebar from '../component/Sidebar';
 import Underbar from '../component/Underbar';
@@ -9,9 +9,14 @@ import receipt_logo from "../image/receipt_logo.png";
 
 const Ingredients = () => {
     const [ingredients, setIngredients] = useState([]);
+    const [modalIngredients, setModalIngredients] = useState([]);
     const [editingIndex, setEditingIndex] = useState(null);
+    const [modalEditingIndex, setModalEditingIndex] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showReceiptModal, setShowReceiptModal] = useState(false);
     const [ingredientToDelete, setIngredientToDelete] = useState(null);
+    const [modalIngredientToDelete, setModalIngredientToDelete] = useState(null);
+    const imageInputRef = useRef(null);
     const navigate = useNavigate();
     const location = useLocation();
     const name = localStorage.getItem('kitchenCompassUserName');
@@ -40,6 +45,29 @@ const Ingredients = () => {
         ]
     };
 
+    const receipttestdata = {
+        "Ingredients": [
+            {
+                "Name": "tomato",
+                "Amount": 1,
+                "Unit": "head",
+                "Deadline": "2022-01-01"
+            },
+            {
+                "Name": "Milk",
+                "Amount": 500,
+                "Unit": "g",
+                "Deadline": "2022-01-01"
+            },
+            {
+                "Name": "Rice",
+                "Amount": 100,
+                "Unit": "loaf",
+                "Deadline": "2022-01-01"
+            }
+        ]
+    };
+
     useEffect(() => {
         // APIからデータを取得する
         // fetch('/api/ingredients')
@@ -60,6 +88,10 @@ const Ingredients = () => {
         setEditingIndex(index);
     };
 
+    const EditModalIngredient = (index) => {
+        setModalEditingIndex(index);
+    };
+
     const SaveIngredient = (index, updatedIngredient) => {
         const updatedIngredients = [...ingredients];
         updatedIngredients[index] = updatedIngredient;
@@ -67,8 +99,28 @@ const Ingredients = () => {
         setEditingIndex(null);
     };
 
+
+    const SaveModalIngredient = (index, updatedIngredient) => {
+        const updatedIngredients = [...modalIngredients];
+        updatedIngredients[index] = updatedIngredient;
+        setModalIngredients(updatedIngredients);
+        setModalEditingIndex(null);
+    };
+
+    const SaveIngredientFromReceipt = () => {
+        const updatedIngredients = [...ingredients, ...modalIngredients];
+        setIngredients(updatedIngredients);
+        setModalEditingIndex(null);
+        setShowReceiptModal(false);
+    };
+
     const ConfirmDeleteIngredient = (ingredient) => {
         setIngredientToDelete(ingredient);
+        setShowDeleteModal(true);
+    };
+
+    const ConfirmDeleteModalIngredient = (ingredient) => {
+        setModalIngredientToDelete(ingredient);
         setShowDeleteModal(true);
     };
 
@@ -78,16 +130,45 @@ const Ingredients = () => {
         setIngredientToDelete(null);
     };
 
+    const DeleteModalIngredient = () => {
+        setModalIngredients(modalIngredients.filter(ingredient => ingredient !== modalIngredientToDelete));
+        setShowDeleteModal(false);
+        setModalIngredientToDelete(null);
+    };
+
+    const OnFileInputChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            // 画像をAPIに送信する処理をここに追加
+            console.log('File selected:', file);
+        }
+        setModalIngredients(receipttestdata.Ingredients);
+        setShowReceiptModal(true);
+    };
+
+    const FileUpload = () => {
+        imageInputRef.current.click();
+    }
+
+
+
     return (
         <div className="relative flex w-full">
             {/* モバイルでは表示されない */}
             <Sidebar src={app_logo} name={name} pageName={pageName} />
-            <div className="grow p-10">
+            <div className="grow p-10 md:ml-[8%]">
                 <h1 className="text-3xl font-bold">Ingredients</h1>
-                <button className="mt-5 ml-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+                <button onClick={FileUpload} className="mt-5 ml-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
                     <img className="fill-current w-4 h-4 mr-2" src={receipt_logo} alt="Scan Receipt" />
                     <span>Scan Receipt</span>
                 </button>
+                <input
+                    hidden
+                    ref={imageInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={OnFileInputChange}
+                />
                 <div className="mt-10 ml-2 flex w-full">
                     <div className="flex flex-col w-full">
                         <div className="w-full">
@@ -133,6 +214,54 @@ const Ingredients = () => {
                 />
                 <span className="ml-2 text-lg font-bold">Log out</span>
             </div>
+            {/* レシートからの食材追加モーダル */}
+            {showReceiptModal && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="max-h-[90vh] overflow-y-auto bg-white p-6 rounded shadow-lg">
+                        <div className="border-b border-gray-200 shadow w-full">
+                            <table className="divide-y divide-zinc-950 w-full">
+                                <thead className="bg-orange-500">
+                                    <tr>
+                                        <th className="px-6 py-2 text-sm text-left text-slate-950">Name</th>
+                                        <th className="px-6 py-2 text-xs text-left text-slate-950">Amount</th>
+                                        <th className="px-6 py-2 text-xs text-left text-slate-950">Unit</th>
+                                        <th className="px-6 py-2 text-xs text-left text-slate-950">Deadline</th>
+                                        <th className="px-6 py-2 text-xs text-left text-slate-950">Edit</th>
+                                        <th className="px-6 py-2 text-xs text-left text-slate-950">Delete</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-orange-100 divide-y divide-gray-300">
+                                    {modalIngredients.map((ingredient, index) => (
+                                        <IngredientRow
+                                            key={index}
+                                            index={index}
+                                            ingredient={ingredient}
+                                            isEditing={modalEditingIndex === index}
+                                            EditIngredient={() => EditModalIngredient(index)}
+                                            SaveIngredient={SaveModalIngredient}
+                                            ConfirmDeleteIngredient={() => ConfirmDeleteModalIngredient(ingredient)}
+                                        />
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="mt-4 flex justify-end">
+                            <button
+                                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2"
+                                onClick={() => setShowReceiptModal(false)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="bg-zinc-900 hover:bg-zinc-950 text-white font-bold py-2 px-4 rounded"
+                                onClick={SaveIngredientFromReceipt}
+                            >
+                                register
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             {/* 削除確認モーダル */}
             {showDeleteModal && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -148,9 +277,9 @@ const Ingredients = () => {
                             </button>
                             <button
                                 className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
-                                onClick={DeleteIngredient}
+                                onClick={ showReceiptModal ? DeleteModalIngredient : DeleteIngredient}
                             >
-                                Delete
+                                delete
                             </button>
                         </div>
                     </div>
