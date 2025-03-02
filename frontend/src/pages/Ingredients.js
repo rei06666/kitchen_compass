@@ -16,6 +16,9 @@ const Ingredients = () => {
     const [showReceiptModal, setShowReceiptModal] = useState(false);
     const [ingredientToDelete, setIngredientToDelete] = useState(null);
     const [modalIngredientToDelete, setModalIngredientToDelete] = useState(null);
+    const [error, setError] = useState(null);
+    const [message, setMessage] = useState(null);
+    const [scanning, setScanning] = useState(false);
     const imageInputRef = useRef(null);
     const navigate = useNavigate();
     const location = useLocation();
@@ -93,14 +96,51 @@ const Ingredients = () => {
     };
 
     const SaveIngredient = (index, updatedIngredient) => {
+        resetMessage();
+        const result = checkIngredient(updatedIngredient);
+        if (!result) {  return; }
         const updatedIngredients = [...ingredients];
         updatedIngredients[index] = updatedIngredient;
         setIngredients(updatedIngredients);
         setEditingIndex(null);
     };
 
+    const checkIngredient = (ingredient) => {
+        if (ingredient.Name === "") {
+            setError(true);
+            setMessage("Name is required");
+            return false;
+        }
+        if (ingredient.Amount === "") {
+            setError(true);
+            setMessage("Amount is required");
+            return false;
+        }
+        if (ingredient.Unit === "") {
+            setError(true);
+            setMessage("Unit is required");
+            return  false;
+        }
+        if (ingredient.Deadline === "") {
+            setError(true);
+            setMessage("Deadline is required");
+            return  false;
+        }
+        setError(false);
+        setMessage("Ingredient updated successfully");
+        return true;
+    };
+
+    const resetMessage = () => {
+        setError(false);
+        setMessage(null);
+    };
+
 
     const SaveModalIngredient = (index, updatedIngredient) => {
+        resetMessage();
+        const result = checkIngredient(updatedIngredient);
+        if (!result) {  return; }
         const updatedIngredients = [...modalIngredients];
         updatedIngredients[index] = updatedIngredient;
         setModalIngredients(updatedIngredients);
@@ -125,25 +165,31 @@ const Ingredients = () => {
     };
 
     const DeleteIngredient = () => {
+        resetMessage();
         setIngredients(ingredients.filter(ingredient => ingredient !== ingredientToDelete));
         setShowDeleteModal(false);
         setIngredientToDelete(null);
     };
 
     const DeleteModalIngredient = () => {
+        resetMessage();
         setModalIngredients(modalIngredients.filter(ingredient => ingredient !== modalIngredientToDelete));
         setShowDeleteModal(false);
         setModalIngredientToDelete(null);
     };
 
     const OnFileInputChange = (e) => {
+        resetMessage();
+        setScanning(true);
         const file = e.target.files[0];
         if (file) {
             // 画像をAPIに送信する処理をここに追加
             console.log('File selected:', file);
         }
-        setModalIngredients(receipttestdata.Ingredients);
-        setShowReceiptModal(true);
+        
+        setScanning(false);
+        // setModalIngredients(receipttestdata.Ingredients);
+        // setShowReceiptModal(true);
     };
 
     const FileUpload = () => {
@@ -173,6 +219,9 @@ const Ingredients = () => {
                     <div className="flex flex-col w-full">
                         <div className="w-full">
                             <div className="border-b border-gray-200 shadow w-full">
+                            <div className={`${showReceiptModal ? 'hidden' : ''} font-bold font-KonkhmerSleokchher ${error ? 'text-rose-600' : 'text-emerald-400'}`}>
+                                {message}
+                            </div>
                                 <table className="divide-y divide-zinc-950 w-full">
                                     <thead className="bg-orange-500">
                                         <tr>
@@ -219,6 +268,9 @@ const Ingredients = () => {
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="max-h-[90vh] overflow-y-auto bg-white p-6 rounded shadow-lg">
                         <div className="border-b border-gray-200 shadow w-full">
+                            <div className={`font-bold font-KonkhmerSleokchher ${error ? 'text-rose-600' : 'text-emerald-400'}`}>
+                                {message}
+                            </div>
                             <table className="divide-y divide-zinc-950 w-full">
                                 <thead className="bg-orange-500">
                                     <tr>
@@ -284,6 +336,16 @@ const Ingredients = () => {
                         </div>
                     </div>
                 </div>
+            )}
+            {/* レシートスキャン中モーダル */}
+            {scanning && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="flex flex-col items-center">
+                    <div className="animate-bounce bg-white p-6 rounded shadow-lg mt-4">
+                        <h2 className="text-xl font-bold mb-4">Scanning...</h2>
+                    </div>
+                </div>
+            </div>
             )}
         </div>
     );
