@@ -1,12 +1,10 @@
 const express = require('express');
+const { getIngredients, addIngredients, deleteIngredients } = require('../controllers/ingredientController');
 
 const router = express.Router();
-
-test = async (req, res) => {
-    res.status(200).json({ message: 'ok'});
-};
-
-router.get(`/ingredients/register`, test);
+router.get(`/`, getIngredients);
+router.post(`/`, addIngredients);
+router.delete(`/`, deleteIngredients);
 
 
 

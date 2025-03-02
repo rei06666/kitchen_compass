@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 const IngredientRow = (props) => {
-    const { index, ingredient, isEditing, EditIngredient, SaveIngredient, ConfirmDeleteIngredient } = props;
+    const { index, ingredient, isEditing, EditIngredient, SaveIngredient, DeleteIngredient, editingIndex } = props;
     const [editedIngredient, setEditedIngredient] = useState(ingredient);
 
     const handleChange = (e) => {
@@ -15,52 +15,52 @@ const IngredientRow = (props) => {
                 {isEditing ? (
                     <input
                         type="text"
-                        name="Name"
-                        value={editedIngredient.Name}
+                        name="name"
+                        value={editedIngredient.name}
                         onChange={handleChange}
                         className="text-sm text-gray-900 bg-orange-200 border-b-2 border-orange-500 focus:outline-none font-bold"
                     />
                 ) : (
-                    <div className="text-sm text-gray-900">{ingredient.Name}</div>
+                    <div className="text-sm text-gray-900">{ingredient.name}</div>
                 )}
             </td>
             <td className="px-6 py-4">
                 {isEditing ? (
                     <input
                         type="number"
-                        name="Amount"
-                        value={editedIngredient.Amount}
+                        name="amount"
+                        value={editedIngredient.amount}
                         onChange={handleChange}
                         className="text-sm text-gray-900 bg-orange-200 border-b-2 border-orange-500 focus:outline-none  font-bold"
                     />
                 ) : (
-                    <div className="text-sm text-gray-900">{ingredient.Amount}</div>
+                    <div className="text-sm text-gray-900">{ingredient.amount}</div>
                 )}
             </td>
             <td className="px-6 py-4">
                 {isEditing ? (
                     <input
                         type="text"
-                        name="Unit"
-                        value={editedIngredient.Unit}
+                        name="unit"
+                        value={editedIngredient.unit}
                         onChange={handleChange}
                         className="text-sm text-gray-900 bg-orange-200 border-b-2 border-orange-500 focus:outline-none  font-bold"
                     />
                 ) : (
-                    <div className="text-sm text-gray-900">{ingredient.Unit}</div>
+                    <div className="text-sm text-gray-900">{ingredient.unit}</div>
                 )}
             </td>
             <td className="px-6 py-4">
                 {isEditing ? (
                     <input
                         type="date"
-                        name="Deadline"
-                        value={editedIngredient.Deadline}
+                        name="deadline"
+                        value={editedIngredient.deadline}
                         onChange={handleChange}
                         className="text-sm text-gray-900 bg-orange-200 border-b-2 border-orange-500 focus:outline-none  font-bold"
                     />
                 ) : (
-                    <div className="text-sm text-gray-900">{ingredient.Deadline}</div>
+                    <div className="text-sm text-gray-900">{ingredient.deadline}</div>
                 )}
             </td>
             <td className="px-6 py-4">
@@ -69,7 +69,7 @@ const IngredientRow = (props) => {
                         Save
                     </button>
                 ) : (
-                    <a href="#" onClick={EditIngredient}>
+                    <button href="#" className="disabled:opacity-50" onClick={EditIngredient} disabled={editingIndex !== null}>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="w-6 h-6 text-stone-950"
@@ -86,11 +86,11 @@ const IngredientRow = (props) => {
     2.828L11.828 15H9v-2.828l8.586-8.586z"
                             />
                         </svg>
-                    </a>
+                    </button>
                 )}
             </td>
             <td className="px-6 py-4">
-                <a href="#" onClick={ConfirmDeleteIngredient}>
+                <button href="#" className="disabled:opacity-50" onClick={DeleteIngredient} disabled={editingIndex !== null}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="w-6 h-6 text-stone-950"
@@ -106,7 +106,7 @@ const IngredientRow = (props) => {
     4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                         />
                     </svg>
-                </a>
+                </button>
             </td>
         </tr>
     );

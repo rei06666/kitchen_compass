@@ -6,6 +6,7 @@ import IngredientRow from '../component/IngredientRow';
 import app_logo from "../image/kitchen_compass_logo.png";
 import logout_logo from "../image/logout.png";
 import receipt_logo from "../image/receipt_logo.png";
+import ExecuteAPI from '../util/ExecuteAPI';
 
 const Ingredients = () => {
     const [ingredients, setIngredients] = useState([]);
@@ -13,40 +14,17 @@ const Ingredients = () => {
     const [editingIndex, setEditingIndex] = useState(null);
     const [modalEditingIndex, setModalEditingIndex] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [showReceiptModal, setShowReceiptModal] = useState(false);
+    const [showModal, setshowModal] = useState(false);
     const [ingredientToDelete, setIngredientToDelete] = useState(null);
     const [modalIngredientToDelete, setModalIngredientToDelete] = useState(null);
-    const [error, setError] = useState(null);
-    const [message, setMessage] = useState(null);
+    const [message, setMessage] = useState({type: "", message: ""});
     const [scanning, setScanning] = useState(false);
     const imageInputRef = useRef(null);
     const navigate = useNavigate();
     const location = useLocation();
-    const name = localStorage.getItem('kitchenCompassUserName');
+    const name = "naruserei";
+    // const name = localStorage.getItem('kitchenCompassUserName');
     const pageName = "Ingredients";
-
-    const testdata = {
-        "Ingredients": [
-            {
-                "Name": "Broccoli",
-                "Amount": 1,
-                "Unit": "head",
-                "Deadline": "2022-01-01"
-            },
-            {
-                "Name": "Meat",
-                "Amount": 500,
-                "Unit": "g",
-                "Deadline": "2022-01-01"
-            },
-            {
-                "Name": "Bread",
-                "Amount": 1,
-                "Unit": "loaf",
-                "Deadline": "2022-01-01"
-            }
-        ]
-    };
 
     const receipttestdata = {
         "Ingredients": [
@@ -71,13 +49,30 @@ const Ingredients = () => {
         ]
     };
 
+    
+
     useEffect(() => {
-        // APIからデータを取得する
-        // fetch('/api/ingredients')
-        //     .then(response => response.json())
-        //     .then(data => setIngredients(data))
-        //     .catch(error => console.error('Error fetching ingredients:', error));
-        setIngredients(testdata.Ingredients);
+        const fetchData = async () => {
+            try {
+                // 食材を取得
+                const params = new URLSearchParams({
+                    username: name
+                });
+                const response = await ExecuteAPI(params, "GET", {'Content-Type': 'application/json'}, "", "/ingredient")
+                if (!response.ok) {
+                    throw new Error();
+                }
+                const result = await response.json();
+                setIngredients(result.ingredients);
+            }
+            catch (error) {
+                setMessage({
+                    type: "error",
+                    message: "Failed to get ingredients"
+                });
+            }
+        };
+        fetchData();
     }, []);
 
     const Logout = () => {
@@ -95,47 +90,76 @@ const Ingredients = () => {
         setModalEditingIndex(index);
     };
 
-    const SaveIngredient = (index, updatedIngredient) => {
+    const SaveIngredient = async (index, updatedIngredient) => {
         resetMessage();
         const result = checkIngredient(updatedIngredient);
         if (!result) {  return; }
-        const updatedIngredients = [...ingredients];
-        updatedIngredients[index] = updatedIngredient;
-        setIngredients(updatedIngredients);
-        setEditingIndex(null);
+        try {
+            const body = JSON.stringify({
+                username: name,
+                ingredients: [updatedIngredient]
+            })
+            const response = await ExecuteAPI("", "POST", {'Content-Type': 'application/json'}, body, "/ingredient")
+            if (!response.ok) {
+                throw new Error();
+            }
+            const updatedIngredients = [...ingredients];
+            updatedIngredients[index] = updatedIngredient;
+            setIngredients(updatedIngredients);
+            setEditingIndex(null);
+            return
+        }
+        catch (error) {
+            setMessage({
+                type: "error",
+                message: "Failed to update ingredient"
+            });
+            return
+        }
     };
 
     const checkIngredient = (ingredient) => {
-        if (ingredient.Name === "") {
-            setError(true);
-            setMessage("Name is required");
+        if (ingredient.name === "") {
+            setMessage({
+                type: "error",
+                message: "Name is required"
+            });
             return false;
         }
-        if (ingredient.Amount === "") {
-            setError(true);
-            setMessage("Amount is required");
+        if (ingredient.amount === "") {
+            setMessage({
+                type: "error",
+                message: "Amount is required"
+            });
             return false;
         }
-        if (ingredient.Unit === "") {
-            setError(true);
-            setMessage("Unit is required");
+        if (ingredient.unit === "") {
+            setMessage({
+                type: "error",
+                message: "Unit is required"
+            });
             return  false;
         }
-        if (ingredient.Deadline === "") {
-            setError(true);
-            setMessage("Deadline is required");
+        if (ingredient.deadline === "") {
+            setMessage({
+                type: "error",
+                message: "Deadline is required"
+            });
             return  false;
         }
-        setError(false);
-        setMessage("Ingredient updated successfully");
+        setMessage({
+            type: "success",
+            message: "Ingredient updated successfully"
+        });
         return true;
     };
 
     const resetMessage = () => {
-        setError(false);
-        setMessage(null);
+        setMessage({
+            type: "",
+            message: ""
+        });
     };
-
 
     const SaveModalIngredient = (index, updatedIngredient) => {
         resetMessage();
@@ -147,31 +171,49 @@ const Ingredients = () => {
         setModalEditingIndex(null);
     };
 
-    const SaveIngredientFromReceipt = () => {
+    const registerIngredientFromModal = () => {
         const updatedIngredients = [...ingredients, ...modalIngredients];
         setIngredients(updatedIngredients);
         setModalEditingIndex(null);
-        setShowReceiptModal(false);
+        setshowModal(false);
     };
 
-    const ConfirmDeleteIngredient = (ingredient) => {
+    const DeleteIngredient = (ingredient) => {
         setIngredientToDelete(ingredient);
         setShowDeleteModal(true);
     };
 
-    const ConfirmDeleteModalIngredient = (ingredient) => {
+    const DeleteModalIngredient = (ingredient) => {
         setModalIngredientToDelete(ingredient);
         setShowDeleteModal(true);
     };
 
-    const DeleteIngredient = () => {
+    const confirmDeleteIngredient = async () => {
         resetMessage();
-        setIngredients(ingredients.filter(ingredient => ingredient !== ingredientToDelete));
-        setShowDeleteModal(false);
-        setIngredientToDelete(null);
+        try {
+            const body = JSON.stringify({
+                username: name,
+                ingredients: [ingredientToDelete]
+            })
+            const response = await ExecuteAPI("", "DELETE", {'Content-Type': 'application/json'}, body, "/ingredient")
+            if (!response.ok) {
+                throw new Error();
+            }
+            setIngredients(ingredients.filter(ingredient => ingredient !== ingredientToDelete));
+            setShowDeleteModal(false);
+            setIngredientToDelete(null);
+            return
+        }
+        catch (error) {
+            setMessage({
+                type: "error",
+                message: "Failed to delete"
+            });
+            return
+        }
     };
 
-    const DeleteModalIngredient = () => {
+    const confirmDeleteModalIngredient = () => {
         resetMessage();
         setModalIngredients(modalIngredients.filter(ingredient => ingredient !== modalIngredientToDelete));
         setShowDeleteModal(false);
@@ -189,14 +231,27 @@ const Ingredients = () => {
         
         setScanning(false);
         // setModalIngredients(receipttestdata.Ingredients);
-        // setShowReceiptModal(true);
+        // setshowModal(true);
     };
 
     const FileUpload = () => {
         imageInputRef.current.click();
     }
 
+    const AddIngredient = () => {
+        // 食材数を取得
+        const ingredientCount = ingredients.length;
+        setEditingIndex(ingredientCount);
+        // 使用されているIDを取得
+        const usedIds = new Set(ingredients.map(ingredient => ingredient.id));
 
+        // 最小の空いているIDを探す
+        let id = 0;
+        while (usedIds.has(id)) {
+            id++;
+        }
+        setIngredients([...ingredients, { name: "", amount: "", unit: "", deadline: "", id: id }]);
+    }
 
     return (
         <div className="relative flex w-full">
@@ -219,8 +274,8 @@ const Ingredients = () => {
                     <div className="flex flex-col w-full">
                         <div className="w-full">
                             <div className="border-b border-gray-200 shadow w-full">
-                            <div className={`${showReceiptModal ? 'hidden' : ''} font-bold font-KonkhmerSleokchher ${error ? 'text-rose-600' : 'text-emerald-400'}`}>
-                                {message}
+                            <div className={`${showModal ? 'hidden' : ''} font-bold font-KonkhmerSleokchher ${message.type == "error" ? 'text-rose-600' : 'text-emerald-400'}`}>
+                                {message.message}
                             </div>
                                 <table className="divide-y divide-zinc-950 w-full">
                                     <thead className="bg-orange-500">
@@ -242,11 +297,17 @@ const Ingredients = () => {
                                                 isEditing={editingIndex === index}
                                                 EditIngredient={() => EditIngredient(index)}
                                                 SaveIngredient={SaveIngredient}
-                                                ConfirmDeleteIngredient={() => ConfirmDeleteIngredient(ingredient)}
+                                                DeleteIngredient={() => DeleteIngredient(ingredient)}
+                                                editingIndex = {editingIndex}
                                             />
                                         ))}
                                     </tbody>
                                 </table>
+                            </div>
+                            <div className="flex justify-end">
+                                <button onClick={AddIngredient} className="mt-5 mr-2 bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-orange-800 font-bold py-2 px-4 rounded inline-flex items-center disabled:opacity-50" disabled={editingIndex!==null}>
+                                        <span>Add Ingredient</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -264,12 +325,12 @@ const Ingredients = () => {
                 <span className="ml-2 text-lg font-bold">Log out</span>
             </div>
             {/* レシートからの食材追加モーダル */}
-            {showReceiptModal && (
+            {showModal && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                     <div className="max-h-[90vh] overflow-y-auto bg-white p-6 rounded shadow-lg">
                         <div className="border-b border-gray-200 shadow w-full">
-                            <div className={`font-bold font-KonkhmerSleokchher ${error ? 'text-rose-600' : 'text-emerald-400'}`}>
-                                {message}
+                            <div className={`font-bold font-KonkhmerSleokchher ${message.type == "error" ? 'text-rose-600' : 'text-emerald-400'}`}>
+                                {message.message}
                             </div>
                             <table className="divide-y divide-zinc-950 w-full">
                                 <thead className="bg-orange-500">
@@ -291,7 +352,8 @@ const Ingredients = () => {
                                             isEditing={modalEditingIndex === index}
                                             EditIngredient={() => EditModalIngredient(index)}
                                             SaveIngredient={SaveModalIngredient}
-                                            ConfirmDeleteIngredient={() => ConfirmDeleteModalIngredient(ingredient)}
+                                            DeleteIngredient={() => DeleteModalIngredient(ingredient)}
+                                            editingIndex = {modalEditingIndex}
                                         />
                                     ))}
                                 </tbody>
@@ -300,13 +362,13 @@ const Ingredients = () => {
                         <div className="mt-4 flex justify-end">
                             <button
                                 className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2"
-                                onClick={() => setShowReceiptModal(false)}
+                                onClick={() => setshowModal(false)}
                             >
                                 Cancel
                             </button>
                             <button
                                 className="bg-zinc-900 hover:bg-zinc-950 text-white font-bold py-2 px-4 rounded"
-                                onClick={SaveIngredientFromReceipt}
+                                onClick={registerIngredientFromModal}
                             >
                                 register
                             </button>
@@ -329,7 +391,7 @@ const Ingredients = () => {
                             </button>
                             <button
                                 className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
-                                onClick={ showReceiptModal ? DeleteModalIngredient : DeleteIngredient}
+                                onClick={ showModal ? confirmDeleteModalIngredient : confirmDeleteIngredient}
                             >
                                 delete
                             </button>
