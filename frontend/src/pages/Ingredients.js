@@ -26,31 +26,6 @@ const Ingredients = () => {
     // const name = localStorage.getItem('kitchenCompassUserName');
     const pageName = "Ingredients";
 
-    const receipttestdata = {
-        "Ingredients": [
-            {
-                "Name": "tomato",
-                "Amount": 1,
-                "Unit": "head",
-                "Deadline": "2022-01-01"
-            },
-            {
-                "Name": "Milk",
-                "Amount": 500,
-                "Unit": "g",
-                "Deadline": "2022-01-01"
-            },
-            {
-                "Name": "Rice",
-                "Amount": 100,
-                "Unit": "loaf",
-                "Deadline": "2022-01-01"
-            }
-        ]
-    };
-
-    
-
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -171,11 +146,34 @@ const Ingredients = () => {
         setModalEditingIndex(null);
     };
 
-    const registerIngredientFromModal = () => {
-        const updatedIngredients = [...ingredients, ...modalIngredients];
-        setIngredients(updatedIngredients);
-        setModalEditingIndex(null);
-        setshowModal(false);
+    const registerIngredientFromModal = async () => {
+        resetMessage();
+        for (const ingredient of modalIngredients) {
+            const result = checkIngredient(ingredient);
+            if (!result) {  return; }
+        }
+        try {
+            const body = JSON.stringify({
+                username: name,
+                ingredients: [...modalIngredients]
+            })
+            const response = await ExecuteAPI("", "POST", {'Content-Type': 'application/json'}, body, "/ingredient")
+            if (!response.ok) {
+                throw new Error();
+            }
+            const updatedIngredients = [...ingredients, ...modalIngredients];
+            setIngredients(updatedIngredients);
+            setModalEditingIndex(null);
+            setshowModal(false);
+            return
+        }
+        catch (error) {
+            setMessage({
+                type: "error",
+                message: "Failed to update ingredient"
+            });
+            return
+        }
     };
 
     const DeleteIngredient = (ingredient) => {
@@ -220,18 +218,53 @@ const Ingredients = () => {
         setModalIngredientToDelete(null);
     };
 
-    const OnFileInputChange = (e) => {
+    const OnFileInputChange = async (e) => {
         resetMessage();
         setScanning(true);
         const file = e.target.files[0];
         if (file) {
-            // 画像をAPIに送信する処理をここに追加
-            console.log('File selected:', file);
+            try {
+                const formData = new FormData();
+                formData.append('receipt', file);
+    
+                const response = await fetch(`${process.env.REACT_APP_API_PATH}/ingredient/extract`, {
+                    method: 'POST',
+                    body: formData,
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to extract ingredients from receipt');
+                }
+    
+                const result = await response.json();
+
+                // 最大のIDを取得
+                const maxId = Math.max(...ingredients.map(ingredient => ingredient.id));
+                let id = maxId + 1;
+
+                const receiptIngredients = result.ingredients.map((ingredient) => {
+                    return {
+                        name: ingredient.name,
+                        amount: ingredient.amount,
+                        unit: ingredient.unit,
+                        deadline: "",
+                        id: id++
+                    };
+                });
+                setModalIngredients(receiptIngredients);
+                setshowModal(true);
+            } catch (error) {
+                setMessage({
+                    type: "error",
+                    message: error.message
+                });
+            } finally {
+                setScanning(false);
+                e.target.value = null;
+            }
+        } else {
+            setScanning(false);
         }
-        
-        setScanning(false);
-        // setModalIngredients(receipttestdata.Ingredients);
-        // setshowModal(true);
     };
 
     const FileUpload = () => {
@@ -264,6 +297,7 @@ const Ingredients = () => {
                     <span>Scan Receipt</span>
                 </button>
                 <input
+                    name="receipt"
                     hidden
                     ref={imageInputRef}
                     type="file"
