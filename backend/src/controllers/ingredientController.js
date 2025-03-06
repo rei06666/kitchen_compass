@@ -12,7 +12,6 @@ exports.getIngredients = async (req, res) => {
     const { username } = req.query;
     const sql = 'SELECT * FROM ingredients WHERE user_name = ?';
     const result = await getIngredientsFromDB(sql, username);
-    console.log(result.rows)
     
     res.status(200).json({ 
       message: 'ok',

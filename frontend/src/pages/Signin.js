@@ -46,7 +46,7 @@ export default function Signin() {
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('kitchenCompassUserName', data.name);
     
-            navigate("/ingredients");
+            navigate("/home", { state: {success: "ログインに成功しました"}});
         } catch (error) {
             console.error(error);
             const errorText = "ログインに失敗しました";

@@ -3,8 +3,7 @@ import Signin from "./pages/Signin";
 import Signup from "./pages/Signup"
 import SendVerification from "./pages/SendVerification";
 import ResetPassword from "./pages/ResetPassword";
-import Ingredients from "./pages/Ingredients";
-import Cooking from "./pages/Cooking";
+import Home from "./pages/Home";
 
 function App() {
   return (
@@ -14,8 +13,7 @@ function App() {
         <Route path={`/account/create`} element={<Signup />} />
         <Route path={`/verification`} element={<SendVerification />} />
         <Route path={`/password/reset`} element={<ResetPassword />} />
-        <Route path={`/ingredients`} element={<Ingredients />} />
-        <Route path={`/cooking`} element={<Cooking />} />
+        <Route path={`/home`} element={<Home />} />
       </Routes>
     </BrowserRouter>
   );

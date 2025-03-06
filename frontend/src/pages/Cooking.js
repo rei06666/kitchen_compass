@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation, data } from "react-router-dom";
-import Sidebar from '../component/Sidebar';
-import Underbar from '../component/Underbar';
-import app_logo from "../image/kitchen_compass_logo.png";
+import { useNavigate } from "react-router-dom";
 import logout_logo from "../image/logout.png";
+import ExecuteAPI from '../util/ExecuteAPI';
 
 const menuData = {
     menus: [
@@ -186,18 +184,24 @@ const menuData = {
     ]
 }
 
-const Cooking = () => {
+const recommendMode = {
+    // 家にあって期限切れでない
+    "HomeAndNotExpired": 1,
+    // 家にある（期限切れも含む）
+    "Home": 2,
+    // 家になくてもいい
+    "AnyIngredient": 3
+}
+
+const Cooking = (props) => {
     const navigate = useNavigate();
-    const location = useLocation();
-    const name = "naruserei";
     // const name = localStorage.getItem('kitchenCompassUserName');
-    const pageName = "Cooking";
     const [request, setRequest] = useState('');
-    const [requesting, setRequesting] = useState(false);
     const [error, setError] = useState('');
-    const [selectedTab, setSelectedTab] = useState('HomeAndNotExpired');
+    const [selectedTab, setSelectedTab] = useState(recommendMode.HomeAndNotExpired);
     const [loading, setLoading] = useState(false);
     const [menus, setMenus] = useState([]);
+    const name=props.name
 
     const Logout = () => {
         // ログアウト処理をここに追加
@@ -214,16 +218,35 @@ const Cooking = () => {
         setRequest(event.target.value);
     }
 
-    const sendRequest = (event) => {
-        setMenus([]);
-        setError('');
-        event.preventDefault();
-        const result = checkRequest();
-        if (!result) {
-            return;
+    const sendRequest = async (event) => {
+        try {
+            setMenus([]);
+            setError('');
+            event.preventDefault();
+            const result = checkRequest();
+            if (!result) {
+                return;
+            }
+            setLoading(true);
+            const body = JSON.stringify({
+                username: name,
+                mode: selectedTab,
+                request: request
+            })
+            const response = await ExecuteAPI("", "POST", {'Content-Type': 'application/json'}, body, "/menu/recommend");
+            if (!response.ok) {
+                throw new Error();
+            }
+            const responseJson = await response.json();
+            setMenus(responseJson.menus);
+            setLoading(false);
         }
-        setLoading(true);
-        
+
+        catch (error) {
+            setError('Failed to get menu');
+            setLoading(false);
+            return
+        }
     }
 
     const checkRequest = () => {
@@ -236,10 +259,8 @@ const Cooking = () => {
     }
 
     return (
-        <div className="relative flex w-full">
-            {/* モバイルでは表示されない */}
-            <Sidebar src={app_logo} name={name} pageName={pageName} />
-            <div className="grow p-10 md:ml-[8%]">
+        <div className="grow p-10 md:ml-[8%]">
+            <div>
                 <h1 className="text-3xl font-bold">Cooking</h1>
                 <div className='mt-5 ml-[2%] text-3xl'>
                     <h2 className="font-bold text-orange-950">mode</h2>
@@ -248,7 +269,7 @@ const Cooking = () => {
                         <ul className="hidden md:flex items-center gap-2 text-sm font-medium">
                             <li className="flex-1">
                                 <a
-                                    className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2 ${selectedTab === 'HomeAndNotExpired' ? 'bg-orange-400 text-gray-900 shadow' : 'text-gray-500 hover:bg-orange-200 hover:text-gray-700 hover:shadow'}`}
+                                    className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2 ${selectedTab === recommendMode.HomeAndNotExpired ? 'bg-orange-400 text-gray-900 shadow' : 'text-gray-500 hover:bg-orange-200 hover:text-gray-700 hover:shadow'}`}
                                     onClick={() => handleTabClick('HomeAndNotExpired')}
                                 >
                                     At home, not expired
@@ -256,7 +277,7 @@ const Cooking = () => {
                             </li>
                             <li className="flex-1">
                                 <a
-                                    className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2 ${selectedTab === 'Home' ? 'bg-orange-400 text-gray-900 shadow' : 'text-gray-500 hover:bg-orange-200 hover:text-gray-700 hover:shadow'}`}
+                                    className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2 ${selectedTab === recommendMode.Home ? 'bg-orange-400 text-gray-900 shadow' : 'text-gray-500 hover:bg-orange-200 hover:text-gray-700 hover:shadow'}`}
                                     onClick={() => handleTabClick('Home')}
                                 >
                                     At home
@@ -264,7 +285,7 @@ const Cooking = () => {
                             </li>
                             <li className="flex-1">
                                 <a
-                                    className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2 ${selectedTab === 'AnyIngredient' ? 'bg-orange-400 text-gray-900 shadow' : 'text-gray-500 hover:bg-orange-200 hover:text-gray-700 hover:shadow'}`}
+                                    className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2 ${selectedTab === recommendMode.AnyIngredient ? 'bg-orange-400 text-gray-900 shadow' : 'text-gray-500 hover:bg-orange-200 hover:text-gray-700 hover:shadow'}`}
                                     onClick={() => handleTabClick('AnyIngredient')}
                                 >
                                     Any ingredient
@@ -297,7 +318,7 @@ const Cooking = () => {
                             </div>
                         </form> 
                     </div>
-                    <h2 className={`mt-20 font-bold text-orange-950 ${requesting ? "" : "hidden"}`}>menu</h2>
+                    <h2 className={`mt-20 font-bold text-orange-950 ${loading ? "" : "hidden"}`}>menu</h2>
                     {/* ロード中 */}
                     {loading && (
                         <div role="status " className="flex items-center justify-center mt-20">
@@ -328,8 +349,6 @@ const Cooking = () => {
                     </div>
                 </div>
             </div>
-            {/* モバイルで表示する */}
-            <Underbar pageName={pageName} />
             {/* ログアウトロゴを画面右上に配置 */}
             <div className="fixed top-2 right-2 m-4 flex items-center cursor-pointer" onClick={Logout}>
                 <img

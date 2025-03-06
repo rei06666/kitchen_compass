@@ -1,14 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
-import Sidebar from '../component/Sidebar';
-import Underbar from '../component/Underbar';
 import IngredientRow from '../component/IngredientRow';
-import app_logo from "../image/kitchen_compass_logo.png";
 import logout_logo from "../image/logout.png";
 import receipt_logo from "../image/receipt_logo.png";
 import ExecuteAPI from '../util/ExecuteAPI';
 
-const Ingredients = () => {
+const Ingredients = (props) => {
     const [ingredients, setIngredients] = useState([]);
     const [modalIngredients, setModalIngredients] = useState([]);
     const [editingIndex, setEditingIndex] = useState(null);
@@ -22,9 +19,7 @@ const Ingredients = () => {
     const imageInputRef = useRef(null);
     const navigate = useNavigate();
     const location = useLocation();
-    const name = "naruserei";
-    // const name = localStorage.getItem('kitchenCompassUserName');
-    const pageName = "Ingredients";
+    const name = props.name;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -287,10 +282,8 @@ const Ingredients = () => {
     }
 
     return (
-        <div className="relative flex w-full">
-            {/* モバイルでは表示されない */}
-            <Sidebar src={app_logo} name={name} pageName={pageName} />
-            <div className="grow p-10 md:ml-[8%]">
+        <div className="grow p-10 md:ml-[8%]">
+            <div>
                 <h1 className="text-3xl font-bold">Ingredients</h1>
                 <button onClick={FileUpload} className="mt-5 ml-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
                     <img className="fill-current w-4 h-4 mr-2" src={receipt_logo} alt="Scan Receipt" />
@@ -347,8 +340,6 @@ const Ingredients = () => {
                     </div>
                 </div>
             </div>
-            {/* モバイルで表示する */}
-            <Underbar pageName={pageName} />
             {/* ログアウトロゴを画面右上に配置 */}
             <div className="fixed top-2 right-2 m-4 flex items-center cursor-pointer" onClick={Logout}>
                 <img
