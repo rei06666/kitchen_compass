@@ -3,7 +3,6 @@ node_modules/
 app.db
 config/
 batch/
-recipes.db
 best_sentence_bert_model.bin
 .venv
 __pycache__/

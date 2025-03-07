@@ -5,15 +5,14 @@ app = Flask(__name__)
 
 @app.route('/search', methods=['POST'])
 def search():
-    data = request.get_json()
-    query = data.get('query')
-    if not query:
-        return jsonify({'error': 'Query is required'}), 400
-
     try:
-        similar_recipes = search_similar_recipes(query)
-        print(similar_recipes)
-        return jsonify({'recipes': similar_recipes})
+        data = request.get_json()
+        query = data.get('query')
+        menucount = data.get('menucount')
+        if not query:
+            return jsonify({'error': 'Query is required'}), 400
+        similar_recipes = search_similar_recipes(query, menucount)
+        return jsonify({'data': similar_recipes})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

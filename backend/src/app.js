@@ -2,6 +2,7 @@ const express = require('express');
 const userRoutes = require('./routes/userRoutes');
 const ingredientRoutes = require('./routes/ingredientRoutes');
 const verifyCodeRoutes = require('./routes/verifyCodeRoutes');
+const menuRoutes = require('./routes/menuRoutes');
 const verifyToken = require('./middlewate/authMiddlewate');
 require('dotenv').config();
 const port = process.env.PORT;
@@ -17,6 +18,7 @@ app.use(express.json()); // JSONリクエストを扱えるようにする
 app.use(`/api/${process.env.API_VERSION}/user`, userRoutes); 
 app.use(`/api/${process.env.API_VERSION}/verify-code`, verifyCodeRoutes); 
 app.use(`/api/${process.env.API_VERSION}/ingredient`, ingredientRoutes); 
+app.use(`/api/${process.env.API_VERSION}/menu`, menuRoutes); 
 
 
 module.exports = app;

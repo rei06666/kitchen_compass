@@ -201,6 +201,7 @@ const Cooking = (props) => {
     const [selectedTab, setSelectedTab] = useState(recommendMode.HomeAndNotExpired);
     const [loading, setLoading] = useState(false);
     const [menus, setMenus] = useState([]);
+    const [menuCount, setMenuCount] = useState(1); // レコメンドしてほしいメニュー数
     const name=props.name
 
     const Logout = () => {
@@ -210,11 +211,15 @@ const Cooking = (props) => {
         navigate('/');
     };
 
+    const handleMenuCountChange = (event) => {
+        setMenuCount(event.target.value);
+    };
+
     const handleTabClick = (tabName) => {
         setSelectedTab(tabName);
     };
 
-    const handleResuestChange = (event) => {
+    const handleRequestChange = (event) => {
         setRequest(event.target.value);
     }
 
@@ -231,18 +236,22 @@ const Cooking = (props) => {
             const body = JSON.stringify({
                 username: name,
                 mode: selectedTab,
-                request: request
+                request: request,
+                menucount: menuCount
             })
             const response = await ExecuteAPI("", "POST", {'Content-Type': 'application/json'}, body, "/menu/recommend");
             if (!response.ok) {
                 throw new Error();
             }
             const responseJson = await response.json();
-            setMenus(responseJson.menus);
+            const recommendedRecipes = responseJson.menus;
+            console.log(recommendedRecipes);
+            setMenus(recommendedRecipes);
             setLoading(false);
         }
 
         catch (error) {
+            console.error(error);
             setError('Failed to get menu');
             setLoading(false);
             return
@@ -270,7 +279,7 @@ const Cooking = (props) => {
                             <li className="flex-1">
                                 <a
                                     className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2 ${selectedTab === recommendMode.HomeAndNotExpired ? 'bg-orange-400 text-gray-900 shadow' : 'text-gray-500 hover:bg-orange-200 hover:text-gray-700 hover:shadow'}`}
-                                    onClick={() => handleTabClick('HomeAndNotExpired')}
+                                    onClick={() => handleTabClick(recommendMode.HomeAndNotExpired)}
                                 >
                                     At home, not expired
                                 </a>
@@ -278,7 +287,7 @@ const Cooking = (props) => {
                             <li className="flex-1">
                                 <a
                                     className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2 ${selectedTab === recommendMode.Home ? 'bg-orange-400 text-gray-900 shadow' : 'text-gray-500 hover:bg-orange-200 hover:text-gray-700 hover:shadow'}`}
-                                    onClick={() => handleTabClick('Home')}
+                                    onClick={() => handleTabClick(recommendMode.Home)}
                                 >
                                     At home
                                 </a>
@@ -286,7 +295,7 @@ const Cooking = (props) => {
                             <li className="flex-1">
                                 <a
                                     className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2 ${selectedTab === recommendMode.AnyIngredient ? 'bg-orange-400 text-gray-900 shadow' : 'text-gray-500 hover:bg-orange-200 hover:text-gray-700 hover:shadow'}`}
-                                    onClick={() => handleTabClick('AnyIngredient')}
+                                    onClick={() => handleTabClick(recommendMode.AnyIngredient)}
                                 >
                                     Any ingredient
                                 </a>
@@ -311,12 +320,14 @@ const Cooking = (props) => {
                             {error}
                         </div>
                         <form className="w-full" onSubmit={sendRequest}>
-                        <label htmlFor="request" className="w-full mb-2 text-lg font-medium dark:text-black">What kind of dish do you want to eat?</label>
-                            <textarea onChange={handleResuestChange} id="request" rows="4" className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-200 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Feel free to write your request" value={request}></textarea>
+                            <label htmlFor="request" className="w-full mb-2 text-lg font-medium dark:text-black">What kind of dish do you want to eat?</label>
+                            <textarea onChange={handleRequestChange} id="request" rows="4" className="block p-2.5 w-full text-sm text-gray-900 bg-orange-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-orange-200 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Feel free to write your request" value={request}></textarea>
+                            <label htmlFor="menuCount" className="w-full mb-2 text-lg font-medium dark:text-black mt-4">Number of menus to recommend (1-10)</label>
+                            <input type="number" id="menuCount" name="menuCount" min="1" max="10" value={menuCount} onChange={handleMenuCountChange} className="block p-2.5 w-30 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-orange-200 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" />
                             <div className="flex justify-end">
                                 <button type='submit' className="text-lg right-2 mt-5 bg-orange-900 hover:bg-orange-500 border-gray-500 border text-white font-bold py-2 px-4 rounded">Request</button>
                             </div>
-                        </form> 
+                        </form>   
                     </div>
                     <h2 className={`mt-20 font-bold text-orange-950 ${loading ? "" : "hidden"}`}>menu</h2>
                     {/* ロード中 */}
@@ -331,22 +342,42 @@ const Cooking = (props) => {
                     {/* メニュー表示 */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mt-5">
                         {menus.map((menu, index) => (
-                            <div key={index} className="border-3  text-lg rounded-lg p-5 shadow  bg-orange-200 hover:bg-orange-300">
-                                <h1 className="mt-2 mb-2  font-bold text-orange-900">menu name</h1>
-                                <h1 className="mt-2 mb-2  font-bold">{menu.name}</h1>
-                                <img src={menu.image} alt={menu.name} className="w-full object-cover rounded-lg" />
-                                <h1 className="mt-2 mb-2  font-bold text-orange-900">description</h1>
-                                <p className="mt-1 text-gray-700">{menu.description}</p>
-                                <h1 className="mt-2 mb-2  font-bold text-orange-900">ingredients</h1>
+                            <div key={index} className="relative border-3 text-base rounded-lg p-5 shadow bg-orange-200 hover:bg-orange-300 flex flex-col">
+                                {!menu.canMake && (
+                                    <div className="mt-2">
+                                        <h1 className="font-bold text-sm text-red-600">※材料が足りません</h1>
+                                    </div>
+                                )}
+                                <h1 className="mt-2 mb-2 text-lg font-bold text-orange-900">レシピ名</h1>
+                                <h1 className="mt-2 mb-2 font-bold">{menu.recipe_name}</h1>
+                                <img src={menu.recipe_photo} alt={menu.recipe_name} className="w-full h-48 object-cover rounded-lg" />
+                                <h1 className="mt-2 mb-2 text-lg font-bold text-orange-900">説明</h1>
+                                <p className="mt-1 text-gray-700 ">{menu.description}</p> 
+                                <h1 className="mt-2 mb-2 text-lg font-bold text-orange-900">食材</h1>
                                 <ul className="mt-2">
-                                    {menu.ingredients.map((ingredient, idx) => (
-                                        <li key={idx} className="text-gray-600">{ingredient.name}: {ingredient.quantity}</li>
+                                    {menu.material.map((material, idx) => (
+                                        <li key={idx} className="text-gray-600">{material}</li>
                                     ))}
                                 </ul>
-                                <a href={menu.url} target="_blank" rel="noopener noreferrer" className="mt-4 inline-block bg-orange-900 hover:bg-orange-500 text-white font-bold py-2 px-4 rounded">View Recipe</a>
+                                {!menu.canMake && (
+                                    <div className="mt-2">
+                                        <details className="mt-2">
+                                            <summary className="cursor-pointer font-bold text-orange-800">足りない食材</summary>
+                                            <ul className="mt-2">
+                                                {menu.missingIngredients.map((ingredient, idx) => (
+                                                    <li key={idx} className="text-gray-600">{ingredient}</li>
+                                                ))}
+                                            </ul>
+                                        </details>
+                                    </div>
+                                )}
+                                <div className="mt-auto pt-4">
+                                    <a href={menu.recipe_url} target="_blank" rel="noopener noreferrer" className="inline-block bg-orange-900 hover:bg-orange-500 text-white font-bold py-2 px-4 rounded">View Recipe</a>
+                                </div>
                             </div>
                         ))}
                     </div>
+
                 </div>
             </div>
             {/* ログアウトロゴを画面右上に配置 */}

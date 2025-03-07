@@ -21,13 +21,13 @@ const Sidebar = (props) => {
                 </div>
             </div>
             <ul className="mt-5">
-                <li className={`h-25 px-4 py-2 ${pageName=='ingredients' ? 'bg-orange-600' : ''} hover:bg-orange-500 items-center`} onClick={() => {handlePageName("ingredients")}}>
+                <li className={`h-25 px-4 py-2 ${pageName=='ingredients' ? 'bg-orange-600' : ''} hover:bg-orange-500 items-center cursor-pointer`} onClick={() => {handlePageName("ingredients")}}>
                     <img src={ingredientsIcon} alt="Ingredients" className="w-2/3 mx-auto" />
                     <div style={{ fontSize: 'calc(8vw / 8)' }} className="font-bold font-KonkhmerSleokchher w-full text-center mx-auto py-1">
                         Ingredients
                     </div>
                 </li>
-                <li className={`h-25 px-4 py-2 ${pageName=='cooking' ? 'bg-orange-600' : ''} hover:bg-orange-500 items-center`} onClick={() => {handlePageName("cooking")}}>
+                <li className={`h-25 px-4 py-2 ${pageName=='cooking' ? 'bg-orange-600' : ''} hover:bg-orange-500 items-center cursor-pointer`} onClick={() => {handlePageName("cooking")}}>
                     <img src={cookingIcon} alt="cooking" className="w-2/5 mx-auto" />
                     <div style={{ fontSize: 'calc(8vw / 8)' }} className="font-bold font-KonkhmerSleokchher w-full text-center mx-auto py-1">
                         Cooking

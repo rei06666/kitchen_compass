@@ -1,6 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 require('dotenv').config();
 const db = new sqlite3.Database(process.env.DB_PATH);
+const recipe_db = new sqlite3.Database(process.env.RECIPE_DB_PATH);
 
 exports.getIngredientsFromDB = async (sql, username) => {
     return new Promise((resolve, reject) => {
@@ -55,3 +56,16 @@ exports.deleteIngredientsFromDB = async (sql, ingredients, username) => {
         });
     });
 }
+
+exports.getRecipeByIds = async (recipe_ids) => {
+    return new Promise((resolve, reject) => {
+        const placeholders = recipe_ids.map(() => '?').join(',');
+        const sql = `SELECT * FROM recipes WHERE recipe_id IN (${placeholders})`;
+        recipe_db.all(sql, recipe_ids, (err, rows) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(rows);
+        });
+    });
+};

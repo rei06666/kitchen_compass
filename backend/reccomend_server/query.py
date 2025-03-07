@@ -16,15 +16,13 @@ MODEL_NAME = 'cl-tohoku/bert-base-japanese-whole-word-masking'
 
 
 # SQLiteのDB接続
-DATABASE_URL = "sqlite:///recipes.db"
+DATABASE_URL = "sqlite:///../db/recipes.db"
 engine = create_engine(DATABASE_URL, echo=True)
 SessionLocal = sessionmaker(bind=engine)
 session = SessionLocal()
 
-
 class SentenceBertSearcher:
-    def __init__(self, texts):
-        self.texts = texts
+    def __init__(self):
         self.tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
         self.sentence_bert = SentenceBert()
         self.sentence_bert.load_state_dict(torch.load('vector_model/best_sentence_bert_model.bin', map_location=torch.device('cpu')))
@@ -50,24 +48,24 @@ class SentenceBertSearcher:
         sentence_vectors = np.vstack(sentence_vectors)
         return sentence_vectors
 
+searcher = SentenceBertSearcher()
 
-
-def search_similar_recipes(query, top_k=10):
+def search_similar_recipes(query, menucount):
     # DBから全てのレシピを取得
     recipes = session.query(Recipe).all()
-    descriptions = [recipe.description for recipe in recipes if recipe.description]
+    menucount = int(menucount)
+
     vectors = [np.frombuffer(recipe.vector, dtype=np.float32) for recipe in recipes if recipe.vector]
     if not vectors:
         raise ValueError("No recipe vectors found in the database.")
     
     # クエリのベクトルを生成
-    searcher = SentenceBertSearcher(pd.Series(descriptions))
     query_vector = searcher.make_sentence_vectors(pd.Series([query]))
     
     # 類似度を計算
     similarities = cosine_similarity(query_vector, vectors)
     df_result = pd.DataFrame({'recipe_id': [recipe.recipe_id for recipe in recipes if recipe.vector], 'similarity': similarities[0]})
-    df_result = df_result.sort_values('similarity', ascending=False).head(top_k)
+    df_result = df_result.sort_values('similarity', ascending=False).head(menucount)
     similar_recipeids = df_result['recipe_id'].tolist()
 
     return similar_recipeids
