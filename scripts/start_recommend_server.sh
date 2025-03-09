@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Start recommend server
-cd /home/naruserei/playgroud/web_application/kitchen_compass/kitchen_compass/backend/reccomend_server/
+cd /home/ubuntu/kitchen_compass/backend/reccomend_server/
 source .venv/bin/activate
-python3 api.py &
+nohup python3 api.py > recommendserver.log 2>&1 &
+echo $! > /home/ubuntu/kitchen_compass/backend/reccomend_server/recommendserver.pid

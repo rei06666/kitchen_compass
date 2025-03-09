@@ -12,6 +12,7 @@ const recommendMode = {
     "AnyIngredient": 3
 }
 
+
 const Cooking = (props) => {
     const navigate = useNavigate();
     // リクエスト内容
@@ -128,7 +129,7 @@ const Cooking = (props) => {
                 <h1 className="text-3xl font-bold">Cooking</h1>
                 <div className='mt-5 ml-[2%] text-3xl'>
                     <h2 className="font-bold text-orange-950">mode</h2>
-                    <div className="mt-2 overflow-hidden rounded-xl border border-gray-100 bg-orange-50 p-1">
+                    <div className="mt-2 overflow-hidden rounded-xl w-3/4">
                         {/* レコメンドモード選択タブ */}
                         <ul className="hidden md:flex items-center gap-2 text-sm font-medium">
                             <li className="flex-1">
@@ -171,15 +172,15 @@ const Cooking = (props) => {
                     </div>
                     
                     {/* リクエストフォーム */}
-                    <div className="rounded-xl p-5 border-gray-900 shadow w-full mt-[5%]">
+                    <div className="rounded-xl p-5 border-gray-900 shadow w-full mt-[5%] bg-orange-200">
                         <div className={`${!error ? 'hidden' : ''} text-lg font-bold font-KonkhmerSleokchher text-rose-600`}>
                             {error}
                         </div>
                         <form className="w-full" onSubmit={sendRequest}>
-                            <label htmlFor="request" className="w-full mb-2 text-lg font-medium dark:text-black">What kind of dish do you want to eat?</label>
-                            <textarea onChange={handleRequestChange} id="request" rows="4" className="block p-2.5 w-full text-sm text-gray-900 bg-orange-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-orange-200 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Feel free to write your request" value={request}></textarea>
-                            <label htmlFor="menuCount" className="w-full mb-2 text-lg font-medium dark:text-black mt-4">Number of menus to recommend (1-10)</label>
-                            <input type="number" id="menuCount" name="menuCount" min="1" max="10" value={menuCount} onChange={handleMenuCountChange} className="block p-2.5 w-30 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-orange-200 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                            <label htmlFor="request" className="w-full mb-2 text-lg font-medium dark:text-black">Please fill out your request</label>
+                            <textarea onChange={handleRequestChange} id="request" rows="4" className="block p-2.5 w-full text-sm text-gray-900  rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Feel free to write your request" value={request}></textarea>
+                            <label htmlFor="menuCount" className="w-full mb-2 text-lg font-medium dark:text-black mt-4">Menus to recommend (1-10)</label>
+                            <input type="number" id="menuCount" name="menuCount" min="1" max="10" value={menuCount} onChange={handleMenuCountChange} className="block p-2.5 w-30 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" />
                             <div className="flex justify-end">
                                 <button type='submit' className="text-lg right-2 mt-5 bg-orange-900 hover:bg-orange-500 border-gray-500 border text-white font-bold py-2 px-4 rounded">Request</button>
                             </div>

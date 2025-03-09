@@ -5,18 +5,29 @@ files:
     destination: /home/ubuntu/kitchen_compass
 
 hooks:
-  BeforeInstall:
+  ApplicationStop:
+    - location: scripts/stop_frontend.sh
+      timeout: 300
+      runas: root
+    - location: scripts/stop_backend.sh
+      timeout: 300
+      runas: root
+    - location: scripts/stop_recommend_server.sh
+      timeout: 300
+      runas: root
+
+  AfterInstall:
     - location: scripts/install_dependencies.sh
       timeout: 300
-      runas: ubuntu
+      runas: root
 
   ApplicationStart:
     - location: scripts/start_frontend.sh
       timeout: 300
-      runas: ubuntu
+      runas: root
     - location: scripts/start_backend.sh
       timeout: 300
-      runas: ubuntu
+      runas: root
     - location: scripts/start_recommend_server.sh
       timeout: 300
-      runas: ubuntu
+      runas: root

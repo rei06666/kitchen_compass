@@ -341,6 +341,7 @@ const Ingredients = (props) => {
             }
         } else {
             setScanning(false);
+            e.target.value = null;
         }
     };
 
@@ -390,15 +391,16 @@ const Ingredients = (props) => {
                                 {message.message}
                             </div>
                             {/* 食材一覧 */}
+                            <div className="overflow-x-auto">
                                 <table className="divide-y divide-zinc-950 w-full">
                                     <thead className="bg-orange-500">
                                         <tr>
-                                            <th className="px-6 py-2 text-sm text-left text-slate-950">Name</th>
-                                            <th className="px-6 py-2 text-xs text-left text-slate-950">Amount</th>
-                                            <th className="px-6 py-2 text-xs text-left text-slate-950">Unit</th>
-                                            <th className="px-6 py-2 text-xs text-left text-slate-950">Deadline</th>
-                                            <th className="px-6 py-2 text-xs text-left text-slate-950">Edit</th>
-                                            <th className="px-6 py-2 text-xs text-left text-slate-950">Delete</th>
+                                            <th className="w-full px-6 py-2 text-sm text-left text-slate-950">Name</th>
+                                            <th className="w-full px-6 py-2 text-xs text-left text-slate-950">Amount</th>
+                                            <th className="w-full px-6 py-2 text-xs text-left text-slate-950">Unit</th>
+                                            <th className="w-full px-6 py-2 text-xs text-left text-slate-950">Deadline</th>
+                                            <th className="w-full px-6 py-2 text-xs text-left text-slate-950">Edit</th>
+                                            <th className="w-full px-6 py-2 text-xs text-left text-slate-950">Delete</th>
                                         </tr>
                                     </thead>
                                     <tbody className="bg-orange-100 divide-y divide-gray-300">
@@ -416,6 +418,7 @@ const Ingredients = (props) => {
                                         ))}
                                     </tbody>
                                 </table>
+                            </div>
                             </div>
                             {/* 食材追加ボタン */}
                             <div className="flex justify-end">

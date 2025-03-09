@@ -9,10 +9,10 @@ const Underbar = (props) => {
     const handlePageName = props.handlePageName;
 
     return (
-        <div className="h-[10%] md:hidden fixed bottom-0 w-full bg-orange-400 text-black flex">
+        <div className="z-10 h-[10%] md:hidden fixed bottom-0 w-full bg-orange-400 text-black flex">
             <ul className="flex w-full">
                 {/* 食材ページ遷移ボタン */}
-                <li className={`flex-1 px-4 py-2 ${pageName === 'ingredients' ? 'bg-orange-600' : ''} hover:bg-orange-500 flex flex-col items-center`} onClick={() => {handlePageName("Ingredients")}}>
+                <li className={`flex-1 px-4 py-2 ${pageName === 'ingredients' ? 'bg-orange-600' : ''} hover:bg-orange-500 flex flex-col items-center`} onClick={() => {handlePageName("ingredients")}}>
                     <img src={ingredientsIcon} alt="Ingredients" className="h-2/3" />
                     <div style={{ fontSize: 'calc(8vw / 3)' }} className="mt-1 font-bold font-KonkhmerSleokchher text-xs text-center">
                         Ingredients

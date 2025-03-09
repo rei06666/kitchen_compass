@@ -10,6 +10,7 @@ const Sidebar = (props) => {
     const pageName = props.pageName
     // ページ名を変更する関数を取得
     const handlePageName = props.handlePageName
+    console.log(pageName)
 
     return (
         // レスポンシブデザインのため、md:w-[8%] md:blockを追加
