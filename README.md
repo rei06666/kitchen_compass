@@ -72,7 +72,8 @@ aws s3 cp kitchen_compass.zip s3://kitcom-prd-artifact-bucket
 ![](img/ログイン画面.png)
 
 ### 各種ドキュメント
+NotionとFigmaのリンクです
 [機能要件](https://tall-volcano-d6a.notion.site/1884fcf8811a8057ba6cdc13dac3b3f9)  
 [非機能要件](https://tall-volcano-d6a.notion.site/1894fcf8811a80be8a9dc0f87a6818d7?pvs=73)  
-[設計資料(Figmaで作成)](https://tall-volcano-d6a.notion.site/1914fcf8811a802bbe1ac54c523caad9?pvs=73)  
+[設計資料](https://tall-volcano-d6a.notion.site/1914fcf8811a802bbe1ac54c523caad9?pvs=73)  
 [技術選定](https://tall-volcano-d6a.notion.site/1944fcf8811a808cb7d1e6d835df9429?pvs=73)  
