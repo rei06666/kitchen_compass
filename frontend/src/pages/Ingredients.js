@@ -1,34 +1,70 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import IngredientRow from '../component/IngredientRow';
 import logout_logo from "../image/logout.png";
 import receipt_logo from "../image/receipt_logo.png";
 import ExecuteAPI from '../util/ExecuteAPI';
 
 const Ingredients = (props) => {
+    // 食材情報
     const [ingredients, setIngredients] = useState([]);
+    // レシートから取得した食材情報
     const [modalIngredients, setModalIngredients] = useState([]);
+    // 編集中の食材のインデックス
     const [editingIndex, setEditingIndex] = useState(null);
+    // モーダル内で編集中の食材のインデックス
     const [modalEditingIndex, setModalEditingIndex] = useState(null);
+    // 削除確認モーダルの表示
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    // レシートからの食材追加モーダルの表示
     const [showModal, setshowModal] = useState(false);
+    // 削除対象の食材
     const [ingredientToDelete, setIngredientToDelete] = useState(null);
+    // モーダル内で削除対象の食材
     const [modalIngredientToDelete, setModalIngredientToDelete] = useState(null);
+    // メッセージ
     const [message, setMessage] = useState({type: "", message: ""});
+    // レシートスキャン中かどうか
     const [scanning, setScanning] = useState(false);
+    // レシート画像の参照
     const imageInputRef = useRef(null);
-    const navigate = useNavigate();
-    const location = useLocation();
+    // ユーザー名
     const name = props.name;
+    const navigate = useNavigate();
+    const accessToken = localStorage.getItem('accessToken');
 
+    // セッションが切れた場合の処理
+    const session_expired = () => {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('kitchenCompassUserName');
+        navigate('/', { state: {error: "セッションが切れています" }} );
+    }
+
+    // アクセストークンがない場合の処理
+    if (!accessToken) {
+        session_expired();
+    }
+
+    // 食材情報を取得
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // 食材を取得
                 const params = new URLSearchParams({
                     username: name
                 });
-                const response = await ExecuteAPI(params, "GET", {'Content-Type': 'application/json'}, "", "/ingredient")
+                const response = await ExecuteAPI(
+                    params, 
+                    "GET", 
+                    {
+                        'Content-Type': 'application/json',
+                        'authorization': accessToken
+                    }, 
+                    "", 
+                    "/ingredient"
+                );
+                if (response.status === 401) {
+                    session_expired();
+                }
                 if (!response.ok) {
                     throw new Error();
                 }
@@ -45,21 +81,15 @@ const Ingredients = (props) => {
         fetchData();
     }, []);
 
+    // ログアウト処理
     const Logout = () => {
-        // ログアウト処理をここに追加
         localStorage.removeItem('accessToken');
         localStorage.removeItem('kitchenCompassUserName');
         navigate('/');
     };
 
-    const EditIngredient = (index) => {
-        setEditingIndex(index);
-    };
-
-    const EditModalIngredient = (index) => {
-        setModalEditingIndex(index);
-    };
-
+    
+    // 食材情報を更新
     const SaveIngredient = async (index, updatedIngredient) => {
         resetMessage();
         const result = checkIngredient(updatedIngredient);
@@ -69,7 +99,19 @@ const Ingredients = (props) => {
                 username: name,
                 ingredients: [updatedIngredient]
             })
-            const response = await ExecuteAPI("", "POST", {'Content-Type': 'application/json'}, body, "/ingredient")
+            const response = await ExecuteAPI(
+                "", 
+                "POST", 
+                {
+                    'Content-Type': 'application/json',
+                    'authorization': accessToken
+                }, 
+                body, 
+                "/ingredient"
+            );
+            if (response.status === 401) {
+                session_expired();
+            }
             if (!response.ok) {
                 throw new Error();
             }
@@ -88,6 +130,7 @@ const Ingredients = (props) => {
         }
     };
 
+    // 食材情報のバリデーション
     const checkIngredient = (ingredient) => {
         if (ingredient.name === "") {
             setMessage({
@@ -124,6 +167,7 @@ const Ingredients = (props) => {
         return true;
     };
 
+    // メッセージをリセット
     const resetMessage = () => {
         setMessage({
             type: "",
@@ -131,6 +175,7 @@ const Ingredients = (props) => {
         });
     };
 
+    // モーダル内の食材情報を更新
     const SaveModalIngredient = (index, updatedIngredient) => {
         resetMessage();
         const result = checkIngredient(updatedIngredient);
@@ -141,6 +186,7 @@ const Ingredients = (props) => {
         setModalEditingIndex(null);
     };
 
+    // モーダル内の食材情報を登録
     const registerIngredientFromModal = async () => {
         resetMessage();
         for (const ingredient of modalIngredients) {
@@ -152,7 +198,19 @@ const Ingredients = (props) => {
                 username: name,
                 ingredients: [...modalIngredients]
             })
-            const response = await ExecuteAPI("", "POST", {'Content-Type': 'application/json'}, body, "/ingredient")
+            const response = await ExecuteAPI(
+                "", 
+                "POST", 
+                {
+                    'Content-Type': 'application/json',
+                    'authorization': accessToken
+                }, 
+                body, 
+                "/ingredient"
+            );
+            if (response.status === 401) {
+                session_expired();
+            }
             if (!response.ok) {
                 throw new Error();
             }
@@ -171,16 +229,19 @@ const Ingredients = (props) => {
         }
     };
 
+    // 食材削除
     const DeleteIngredient = (ingredient) => {
         setIngredientToDelete(ingredient);
         setShowDeleteModal(true);
     };
 
+    // モーダル内の食材削除
     const DeleteModalIngredient = (ingredient) => {
         setModalIngredientToDelete(ingredient);
         setShowDeleteModal(true);
     };
-
+    
+    // 食材削除確認
     const confirmDeleteIngredient = async () => {
         resetMessage();
         try {
@@ -188,7 +249,19 @@ const Ingredients = (props) => {
                 username: name,
                 ingredients: [ingredientToDelete]
             })
-            const response = await ExecuteAPI("", "DELETE", {'Content-Type': 'application/json'}, body, "/ingredient")
+            const response = await ExecuteAPI(
+                "", 
+                "DELETE", 
+                {
+                    'Content-Type': 'application/json',
+                    'authorization': accessToken
+                }, 
+                body, 
+                "/ingredient"
+            );
+            if (response.status === 401) {
+                session_expired();
+            }
             if (!response.ok) {
                 throw new Error();
             }
@@ -206,6 +279,7 @@ const Ingredients = (props) => {
         }
     };
 
+    // モーダル内の食材削除確認
     const confirmDeleteModalIngredient = () => {
         resetMessage();
         setModalIngredients(modalIngredients.filter(ingredient => ingredient !== modalIngredientToDelete));
@@ -213,6 +287,7 @@ const Ingredients = (props) => {
         setModalIngredientToDelete(null);
     };
 
+    // レシート画像から食材を取得
     const OnFileInputChange = async (e) => {
         resetMessage();
         setScanning(true);
@@ -221,11 +296,18 @@ const Ingredients = (props) => {
             try {
                 const formData = new FormData();
                 formData.append('receipt', file);
-    
-                const response = await fetch(`${process.env.REACT_APP_API_PATH}/ingredient/extract`, {
-                    method: 'POST',
-                    body: formData,
-                });
+                const response = await ExecuteAPI(
+                    "", 
+                    "POST", 
+                    {
+                        'authorization': accessToken
+                    }, 
+                    formData, 
+                    "/ingredient/extract"
+                );
+                if (response.status === 401) {
+                    session_expired();
+                }
     
                 if (!response.ok) {
                     throw new Error('Failed to extract ingredients from receipt');
@@ -262,10 +344,12 @@ const Ingredients = (props) => {
         }
     };
 
+    // ファイルアップロード
     const FileUpload = () => {
         imageInputRef.current.click();
     }
 
+    // 食材追加
     const AddIngredient = () => {
         // 食材数を取得
         const ingredientCount = ingredients.length;
@@ -285,6 +369,7 @@ const Ingredients = (props) => {
         <div className="grow p-10 md:ml-[8%]">
             <div>
                 <h1 className="text-3xl font-bold">Ingredients</h1>
+                {/* レシートスキャンボタン */}
                 <button onClick={FileUpload} className="mt-5 ml-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
                     <img className="fill-current w-4 h-4 mr-2" src={receipt_logo} alt="Scan Receipt" />
                     <span>Scan Receipt</span>
@@ -304,6 +389,7 @@ const Ingredients = (props) => {
                             <div className={`${showModal ? 'hidden' : ''} font-bold font-KonkhmerSleokchher ${message.type == "error" ? 'text-rose-600' : 'text-emerald-400'}`}>
                                 {message.message}
                             </div>
+                            {/* 食材一覧 */}
                                 <table className="divide-y divide-zinc-950 w-full">
                                     <thead className="bg-orange-500">
                                         <tr>
@@ -322,7 +408,7 @@ const Ingredients = (props) => {
                                                 index={index}
                                                 ingredient={ingredient}
                                                 isEditing={editingIndex === index}
-                                                EditIngredient={() => EditIngredient(index)}
+                                                EditIngredient={() => setEditingIndex(index)}
                                                 SaveIngredient={SaveIngredient}
                                                 DeleteIngredient={() => DeleteIngredient(ingredient)}
                                                 editingIndex = {editingIndex}
@@ -331,6 +417,7 @@ const Ingredients = (props) => {
                                     </tbody>
                                 </table>
                             </div>
+                            {/* 食材追加ボタン */}
                             <div className="flex justify-end">
                                 <button onClick={AddIngredient} className="mt-5 mr-2 bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-orange-300 dark:focus:ring-orange-800 font-bold py-2 px-4 rounded inline-flex items-center disabled:opacity-50" disabled={editingIndex!==null}>
                                         <span>Add Ingredient</span>
@@ -375,7 +462,7 @@ const Ingredients = (props) => {
                                             index={index}
                                             ingredient={ingredient}
                                             isEditing={modalEditingIndex === index}
-                                            EditIngredient={() => EditModalIngredient(index)}
+                                            EditIngredient={() => setModalEditingIndex(index)}
                                             SaveIngredient={SaveModalIngredient}
                                             DeleteIngredient={() => DeleteModalIngredient(ingredient)}
                                             editingIndex = {modalEditingIndex}

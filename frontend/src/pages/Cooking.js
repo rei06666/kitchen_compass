@@ -3,187 +3,6 @@ import { useNavigate } from "react-router-dom";
 import logout_logo from "../image/logout.png";
 import ExecuteAPI from '../util/ExecuteAPI';
 
-const menuData = {
-    menus: [
-        {
-            "name": "ハンバーグ" ,
-            "image": "https://msp.c.yimg.jp/images/v2/FUTi93tXq405grZVGgDqG91D0jtYA8ffcvNYEaSWqFiu6NEj1MaTdZ-CPt-6YVVlxyY7tEABkq5AmX6qnvqGZrY-UPo52uyglfeLvy2mDvmPcOnrgKaDPZK6tNNjRL1saE4-W9uPEB76D8ZD-3inzOxrYG5tFG5kVMAHJXNVkDgUUjQfrSz3EoTjCHnQc5VLy081uZa8lDuwdcy3vRMShigbDBCLSj4c9RJD2XYiO1uYhye2oJxDZ2eIIyo2EvVZBj2JTHC0INSvFj4nRO82Ln8FgJwley2l1ExQSlWmQ-8=/hanba-gu6321.JPG",
-            "description": "ハンバーグの説明",
-            "ingredients": [
-                {
-                    "name": "挽き肉",
-                    "quantity": "200g"
-                },
-                {
-                    "name": "玉ねぎ",
-                    "quantity": "1/2個"
-                },
-                {
-                    "name": "パン粉",
-                    "quantity": "大さじ1"
-                },
-                {
-                    "name": "牛乳",
-                    "quantity": "大さじ1"
-                },
-                {
-                    "name": "塩",
-                    "quantity": "少々"
-                },
-                {
-                    "name": "こしょう",
-                    "quantity": "少々"
-                },
-                {
-                    "name": "卵",
-                    "quantity": "1個"
-                },
-                {
-                    "name": "ケチャップ",
-                    "quantity": "大さじ1"
-                },
-                {
-                    "name": "ソース",
-                    "quantity": "適量"
-                }
-            ],
-            "url": "https://www.kurashiru.com/recipes/d70b6d20-e200-460e-8a98-407117ab8724"
-        },
-        {
-            "name": "ハンバーグ" ,
-            "image": "https://msp.c.yimg.jp/images/v2/FUTi93tXq405grZVGgDqG91D0jtYA8ffcvNYEaSWqFiu6NEj1MaTdZ-CPt-6YVVlxyY7tEABkq5AmX6qnvqGZrY-UPo52uyglfeLvy2mDvmPcOnrgKaDPZK6tNNjRL1saE4-W9uPEB76D8ZD-3inzOxrYG5tFG5kVMAHJXNVkDgUUjQfrSz3EoTjCHnQc5VLy081uZa8lDuwdcy3vRMShigbDBCLSj4c9RJD2XYiO1uYhye2oJxDZ2eIIyo2EvVZBj2JTHC0INSvFj4nRO82Ln8FgJwley2l1ExQSlWmQ-8=/hanba-gu6321.JPG",
-            "description": "ハンバーグの説明",
-            "ingredients": [
-                {
-                    "name": "挽き肉",
-                    "quantity": "200g"
-                },
-                {
-                    "name": "玉ねぎ",
-                    "quantity": "1/2個"
-                },
-                {
-                    "name": "パン粉",
-                    "quantity": "大さじ1"
-                },
-                {
-                    "name": "牛乳",
-                    "quantity": "大さじ1"
-                },
-                {
-                    "name": "塩",
-                    "quantity": "少々"
-                },
-                {
-                    "name": "こしょう",
-                    "quantity": "少々"
-                },
-                {
-                    "name": "卵",
-                    "quantity": "1個"
-                },
-                {
-                    "name": "ケチャップ",
-                    "quantity": "大さじ1"
-                },
-                {
-                    "name": "ソース",
-                    "quantity": "適量"
-                }
-            ],
-            "url": "https://www.kurashiru.com/recipes/d70b6d20-e200-460e-8a98-407117ab8724"
-        },
-        {
-            "name": "ハンバーグ" ,
-            "image": "https://msp.c.yimg.jp/images/v2/FUTi93tXq405grZVGgDqG91D0jtYA8ffcvNYEaSWqFiu6NEj1MaTdZ-CPt-6YVVlxyY7tEABkq5AmX6qnvqGZrY-UPo52uyglfeLvy2mDvmPcOnrgKaDPZK6tNNjRL1saE4-W9uPEB76D8ZD-3inzOxrYG5tFG5kVMAHJXNVkDgUUjQfrSz3EoTjCHnQc5VLy081uZa8lDuwdcy3vRMShigbDBCLSj4c9RJD2XYiO1uYhye2oJxDZ2eIIyo2EvVZBj2JTHC0INSvFj4nRO82Ln8FgJwley2l1ExQSlWmQ-8=/hanba-gu6321.JPG",
-            "description": "ハンバーグの説明",
-            "ingredients": [
-                {
-                    "name": "挽き肉",
-                    "quantity": "200g"
-                },
-                {
-                    "name": "玉ねぎ",
-                    "quantity": "1/2個"
-                },
-                {
-                    "name": "パン粉",
-                    "quantity": "大さじ1"
-                },
-                {
-                    "name": "牛乳",
-                    "quantity": "大さじ1"
-                },
-                {
-                    "name": "塩",
-                    "quantity": "少々"
-                },
-                {
-                    "name": "こしょう",
-                    "quantity": "少々"
-                },
-                {
-                    "name": "卵",
-                    "quantity": "1個"
-                },
-                {
-                    "name": "ケチャップ",
-                    "quantity": "大さじ1"
-                },
-                {
-                    "name": "ソース",
-                    "quantity": "適量"
-                }
-            ],
-            "url": "https://www.kurashiru.com/recipes/d70b6d20-e200-460e-8a98-407117ab8724"
-        },
-        {
-            "name": "ハンバーグ" ,
-            "image": "https://msp.c.yimg.jp/images/v2/FUTi93tXq405grZVGgDqG91D0jtYA8ffcvNYEaSWqFiu6NEj1MaTdZ-CPt-6YVVlxyY7tEABkq5AmX6qnvqGZrY-UPo52uyglfeLvy2mDvmPcOnrgKaDPZK6tNNjRL1saE4-W9uPEB76D8ZD-3inzOxrYG5tFG5kVMAHJXNVkDgUUjQfrSz3EoTjCHnQc5VLy081uZa8lDuwdcy3vRMShigbDBCLSj4c9RJD2XYiO1uYhye2oJxDZ2eIIyo2EvVZBj2JTHC0INSvFj4nRO82Ln8FgJwley2l1ExQSlWmQ-8=/hanba-gu6321.JPG",
-            "description": "ハンバーグの説明",
-            "ingredients": [
-                {
-                    "name": "挽き肉",
-                    "quantity": "200g"
-                },
-                {
-                    "name": "玉ねぎ",
-                    "quantity": "1/2個"
-                },
-                {
-                    "name": "パン粉",
-                    "quantity": "大さじ1"
-                },
-                {
-                    "name": "牛乳",
-                    "quantity": "大さじ1"
-                },
-                {
-                    "name": "塩",
-                    "quantity": "少々"
-                },
-                {
-                    "name": "こしょう",
-                    "quantity": "少々"
-                },
-                {
-                    "name": "卵",
-                    "quantity": "1個"
-                },
-                {
-                    "name": "ケチャップ",
-                    "quantity": "大さじ1"
-                },
-                {
-                    "name": "ソース",
-                    "quantity": "適量"
-                }
-            ],
-            "url": "https://www.kurashiru.com/recipes/d70b6d20-e200-460e-8a98-407117ab8724"
-        }
-    ]
-}
-
 const recommendMode = {
     // 家にあって期限切れでない
     "HomeAndNotExpired": 1,
@@ -195,34 +14,58 @@ const recommendMode = {
 
 const Cooking = (props) => {
     const navigate = useNavigate();
-    // const name = localStorage.getItem('kitchenCompassUserName');
+    // リクエスト内容
     const [request, setRequest] = useState('');
+    // エラーメッセージ
     const [error, setError] = useState('');
+    // レコメンドモード
     const [selectedTab, setSelectedTab] = useState(recommendMode.HomeAndNotExpired);
+    // ロード中かどうか
     const [loading, setLoading] = useState(false);
+    // レコメンドされたメニュー
     const [menus, setMenus] = useState([]);
-    const [menuCount, setMenuCount] = useState(1); // レコメンドしてほしいメニュー数
+    // レコメンドするメニュー数
+    const [menuCount, setMenuCount] = useState(1);
+    // ユーザー名
     const name=props.name
+    // アクセストークン
+    const accessToken = localStorage.getItem('accessToken');
 
+    // セッションが切れた場合の処理
+    const session_expired = () => {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('kitchenCompassUserName');
+        navigate('/', { state: {error: "セッションが切れています" }} );
+    }
+    
+    // アクセストークンがない場合の処理
+    if (!accessToken) {
+        session_expired();
+    }
+
+    // ログアウト処理
     const Logout = () => {
-        // ログアウト処理をここに追加
         localStorage.removeItem('accessToken');
         localStorage.removeItem('kitchenCompassUserName');
         navigate('/');
     };
 
+    // メニュー数変更処理
     const handleMenuCountChange = (event) => {
         setMenuCount(event.target.value);
     };
 
+    // レコメンドモード変更処理
     const handleTabClick = (tabName) => {
         setSelectedTab(tabName);
     };
 
+    // リクエスト内容変更処理
     const handleRequestChange = (event) => {
         setRequest(event.target.value);
     }
 
+    // リクエスト送信処理
     const sendRequest = async (event) => {
         try {
             setMenus([]);
@@ -239,13 +82,24 @@ const Cooking = (props) => {
                 request: request,
                 menucount: menuCount
             })
-            const response = await ExecuteAPI("", "POST", {'Content-Type': 'application/json'}, body, "/menu/recommend");
+            const response = await ExecuteAPI(
+                "", 
+                "POST", 
+                {
+                    'Content-Type': 'application/json',
+                    'authorization': accessToken
+                }, 
+                body, 
+                "/menu/recommend"
+            );
+            if (response.status === 401) {
+                session_expired();
+            }
             if (!response.ok) {
                 throw new Error();
             }
             const responseJson = await response.json();
             const recommendedRecipes = responseJson.menus;
-            console.log(recommendedRecipes);
             setMenus(recommendedRecipes);
             setLoading(false);
         }
@@ -258,6 +112,7 @@ const Cooking = (props) => {
         }
     }
 
+    // リクエスト内容チェック
     const checkRequest = () => {
         if (request === '') {
             setError('Request is empty');
@@ -274,7 +129,7 @@ const Cooking = (props) => {
                 <div className='mt-5 ml-[2%] text-3xl'>
                     <h2 className="font-bold text-orange-950">mode</h2>
                     <div className="mt-2 overflow-hidden rounded-xl border border-gray-100 bg-orange-50 p-1">
-                        {/* タブ表示 */}
+                        {/* レコメンドモード選択タブ */}
                         <ul className="hidden md:flex items-center gap-2 text-sm font-medium">
                             <li className="flex-1">
                                 <a
@@ -301,7 +156,7 @@ const Cooking = (props) => {
                                 </a>
                             </li>
                         </ul>
-                        {/* プルダウン表示 */}
+                        {/* モバイル端末ではプルダウン表示 */}
                         <div className="md:hidden">
                             <select
                                 className="w-full rounded-lg border border-gray-300 bg-white p-2 text-sm"
@@ -315,6 +170,7 @@ const Cooking = (props) => {
                         </div>
                     </div>
                     
+                    {/* リクエストフォーム */}
                     <div className="rounded-xl p-5 border-gray-900 shadow w-full mt-[5%]">
                         <div className={`${!error ? 'hidden' : ''} text-lg font-bold font-KonkhmerSleokchher text-rose-600`}>
                             {error}

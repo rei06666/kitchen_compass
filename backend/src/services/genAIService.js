@@ -2,6 +2,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
+// レシピを作れるかどうかを確認
 exports.checkIfCanMakeRecipe = async (recipeIngredienttext, Ingredientstext) => {
     const prompt = `以下の材料を使ってレシピを作ることができますか？もし作れない場合、足りない材料を教えてください。
 レシピの材料: ${recipeIngredienttext}

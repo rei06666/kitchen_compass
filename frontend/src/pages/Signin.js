@@ -22,6 +22,7 @@ export default function Signin() {
         mode: 'onChange',
     });
 
+    // ログイン
     const signIn = async (data) => {
         try {
             const response = await fetch(`${process.env.REACT_APP_API_PATH}/user/signin`, {
@@ -54,10 +55,12 @@ export default function Signin() {
         }
     }
 
+    // パスワードのリセット
     const goToVerification = () => {
         navigate("/verification")
     }
 
+    // アカウント作成
     const goToSignUp = () => {
         console.log("create account")
         navigate("/account/create")
@@ -72,16 +75,11 @@ export default function Signin() {
                         {location.state?.success || location.state?.error}
                     </div>
                     <div className="container mx-auto w-2/3 rounded-sm shadow-md bg-orange-200">
-                        <div className="flex">
-                            <img src={broccoli_logo} className="w-1/10 h-[40px] mx-auto m-2" />
-                            <img src={meat_logo} className="w-1/10 h-[40px] mx-auto m-2" />
-                            <img src={bread_logo} className="w-1/10 h-[40px] mx-auto m-2" />
-                        </div>
                         <form
                         onSubmit={handleSubmit(signIn)}
                         className="p-2"
                         >
-                        <div className="flex w-full flex-col">
+                        <div className="mt-2 flex w-full flex-col">
                             <label className="text-[12px] font-KonkhmerSleokchher text-gray-950" htmlFor="name">
                             Name
                             </label>

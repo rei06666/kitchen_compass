@@ -1,0 +1,22 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ubuntu/kitchen_compass
+
+hooks:
+  BeforeInstall:
+    - location: scripts/install_dependencies.sh
+      timeout: 300
+      runas: ubuntu
+
+  ApplicationStart:
+    - location: scripts/start_frontend.sh
+      timeout: 300
+      runas: ubuntu
+    - location: scripts/start_backend.sh
+      timeout: 300
+      runas: ubuntu
+    - location: scripts/start_recommend_server.sh
+      timeout: 300
+      runas: ubuntu

@@ -18,6 +18,7 @@ export default function ResetPassword() {
         mode: 'onChange',
     });
 
+    // パスワード再設定
     const resetPassword = async (data) => {
         try {
             console.log(data.verification)
@@ -46,6 +47,7 @@ export default function ResetPassword() {
         }
     }
 
+    // ログイン画面に戻る
     const backToSignin = () => {
         navigate("/")
     }

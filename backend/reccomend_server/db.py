@@ -1,3 +1,4 @@
+# 使用するデータベースの定義をするファイル
 from sqlalchemy import Column, String, PrimaryKeyConstraint, LargeBinary
 from sqlalchemy.ext.declarative import declarative_base
 

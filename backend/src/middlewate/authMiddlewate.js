@@ -4,6 +4,7 @@ const cognitoClient = new CognitoIdentityProviderClient({
   region: process.env.AWS_REGION
 });
 
+// トークンの検証
 const verifyToken = async (req, res, next) => {
   const token = req.headers.authorization;
 
@@ -17,6 +18,7 @@ const verifyToken = async (req, res, next) => {
     });
 
     await cognitoClient.send(getUserCommand);
+    
 
     next();
   } catch (error) {

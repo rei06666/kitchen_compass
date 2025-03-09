@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 
+// 食材の行を表示するコンポーネント
 const IngredientRow = (props) => {
     const { index, ingredient, isEditing, EditIngredient, SaveIngredient, DeleteIngredient, editingIndex } = props;
-    const [editedIngredient, setEditedIngredient] = useState(ingredient);
 
+    // 編集中の食材情報を保持するステート
+    const [editedIngredient, setEditedIngredient] = useState(ingredient);
+    
+    // 入力フォームの値が変更されたときに呼ばれる関数
     const handleChange = (e) => {
         const { name, value } = e.target;
         setEditedIngredient({ ...editedIngredient, [name]: value });
@@ -11,6 +15,7 @@ const IngredientRow = (props) => {
 
     return (
         <tr className={`whitespace-nowrap ${isEditing ? 'bg-orange-200' : ''}`}>
+            {/* 食材名 */}
             <td className="px-6 py-4">
                 {isEditing ? (
                     <input
@@ -24,6 +29,7 @@ const IngredientRow = (props) => {
                     <div className="text-sm text-gray-900">{ingredient.name}</div>
                 )}
             </td>
+            {/* 分量 */}
             <td className="px-6 py-4">
                 {isEditing ? (
                     <input
@@ -37,6 +43,7 @@ const IngredientRow = (props) => {
                     <div className="text-sm text-gray-900">{ingredient.amount}</div>
                 )}
             </td>
+            {/* 単位 */}
             <td className="px-6 py-4">
                 {isEditing ? (
                     <input
@@ -50,6 +57,7 @@ const IngredientRow = (props) => {
                     <div className="text-sm text-gray-900">{ingredient.unit}</div>
                 )}
             </td>
+            {/* 賞味期限 */}
             <td className="px-6 py-4">
                 {isEditing ? (
                     <input
@@ -63,6 +71,7 @@ const IngredientRow = (props) => {
                     <div className="text-sm text-gray-900">{ingredient.deadline}</div>
                 )}
             </td>
+            {/* 編集ボタン */}
             <td className="px-6 py-4">
                 {isEditing ? (
                     <button onClick={() => SaveIngredient(index, editedIngredient)} className="text-blue-500 font-bold">
@@ -89,6 +98,7 @@ const IngredientRow = (props) => {
                     </button>
                 )}
             </td>
+            {/* 削除ボタン */}
             <td className="px-6 py-4">
                 <button href="#" className="disabled:opacity-50" onClick={DeleteIngredient} disabled={editingIndex !== null}>
                     <svg

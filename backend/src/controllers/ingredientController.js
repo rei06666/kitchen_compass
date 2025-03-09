@@ -1,12 +1,12 @@
 
 const { getIngredientsFromDB, addIngredientsToDB, deleteIngredientsFromDB } = require('../services/dbService');
 const vision = require('@google-cloud/vision');
-const axios = require('axios');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const client = new vision.ImageAnnotatorClient();
 
+// 食材データを取得
 exports.getIngredients = async (req, res) => {
   try {
     const { username } = req.query;
@@ -22,6 +22,7 @@ exports.getIngredients = async (req, res) => {
   }
 }
 
+// 食材データを追加
 exports.addIngredients = async (req, res) => {
   try {
     const { username, ingredients } = req.body;
@@ -38,6 +39,7 @@ exports.addIngredients = async (req, res) => {
   }
 }
 
+// 食材データを削除
 exports.deleteIngredients = async (req, res) => {
   try {
     const { username, ingredients } = req.body;
@@ -54,6 +56,7 @@ exports.deleteIngredients = async (req, res) => {
   }
 }
 
+// レシートから食材を抽出
 exports.extractIngredientsFromReceipt = async (req, res) => {
   try {
     const file = req.file;
@@ -65,7 +68,6 @@ exports.extractIngredientsFromReceipt = async (req, res) => {
     const [result] = await client.textDetection(file.buffer);
     const detections = result.textAnnotations;
     const extractedText = detections.map(text => text.description).join(' ');
-    console.log(extractedText)
 
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
 
@@ -103,7 +105,6 @@ exports.extractIngredientsFromReceipt = async (req, res) => {
     const promptResult = await model.generateContent(prompt);
     const response = await promptResult.response;
     const text = response.text();
-    console.log("text: ", text)
 
     // コードブロック(```json ... ```)を除去する
     let jsonString = text.trim();

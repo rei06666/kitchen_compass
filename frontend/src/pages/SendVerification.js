@@ -16,6 +16,7 @@ export default function SendVerification() {
         mode: 'onChange',
     });
 
+    // 確認コードを送信
     const sendVerification = async (data) => {
         try {
             const response = await fetch(`${process.env.REACT_APP_API_PATH}/verify-code`, {
@@ -42,6 +43,7 @@ export default function SendVerification() {
         }
     }
 
+    // ログイン画面に戻る
     const backToSignin = () => {
         console.log("back to signin")
         navigate("/")

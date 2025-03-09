@@ -2,7 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:3001",
+  "proxy": "http://localhost:3500",
   "dependencies": {
     "@google-cloud/vision": "^4.3.3",
     "@tanstack/react-table": "^8.21.2",

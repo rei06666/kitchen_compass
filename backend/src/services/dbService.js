@@ -3,6 +3,7 @@ require('dotenv').config();
 const db = new sqlite3.Database(process.env.DB_PATH);
 const recipe_db = new sqlite3.Database(process.env.RECIPE_DB_PATH);
 
+// データベースから食材を取得
 exports.getIngredientsFromDB = async (sql, username) => {
     return new Promise((resolve, reject) => {
         db.all(sql, [username], (err, rows) => {
@@ -14,6 +15,7 @@ exports.getIngredientsFromDB = async (sql, username) => {
     });
 }
 
+// データベースに食材を追加
 exports.addIngredientsToDB = async (sql, ingredients, username) => {
     return new Promise((resolve, reject) => {
         db.serialize(() => {
@@ -38,6 +40,7 @@ exports.addIngredientsToDB = async (sql, ingredients, username) => {
     });
 }
 
+// データベースから食材を削除
 exports.deleteIngredientsFromDB = async (sql, ingredients, username) => {
     return new Promise((resolve, reject) => {
         const stmt = db.prepare(sql);
@@ -57,6 +60,7 @@ exports.deleteIngredientsFromDB = async (sql, ingredients, username) => {
     });
 }
 
+// レシピIDからレシピを取得
 exports.getRecipeByIds = async (recipe_ids) => {
     return new Promise((resolve, reject) => {
         const placeholders = recipe_ids.map(() => '?').join(',');

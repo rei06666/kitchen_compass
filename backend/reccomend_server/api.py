@@ -3,7 +3,8 @@ from query import search_similar_recipes
 
 app = Flask(__name__)
 
-@app.route('/search', methods=['POST'])
+# レシピレコメンドAPI
+@app.route('/menu/recommend', methods=['POST'])
 def search():
     try:
         data = request.get_json()
@@ -11,6 +12,7 @@ def search():
         menucount = data.get('menucount')
         if not query:
             return jsonify({'error': 'Query is required'}), 400
+        # 類似レシピを検索
         similar_recipes = search_similar_recipes(query, menucount)
         return jsonify({'data': similar_recipes})
     except Exception as e:

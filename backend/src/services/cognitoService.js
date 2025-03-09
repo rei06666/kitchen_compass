@@ -13,6 +13,7 @@ const cognitoClient = new CognitoIdentityProviderClient({
   region: process.env.AWS_REGION
 });
 
+// ユーザーのサインアップ
 exports.signUpUser = async (email, name, password) => {
   try {
     const secretHash = getSecretHash(name);
@@ -56,6 +57,7 @@ exports.signUpUser = async (email, name, password) => {
   }
 };
 
+// ユーザーのサインイン
 exports.signInUser = async (name, password) => {
   try {
     // ユーザーのサインイン
@@ -81,6 +83,7 @@ exports.signInUser = async (name, password) => {
   }
 };
 
+// パスワードのリセット
 exports.sendVerification = async (name) => {
     try {
       const command = new ForgotPasswordCommand({
@@ -98,6 +101,7 @@ exports.sendVerification = async (name) => {
     }
 };
 
+// パスワードの変更
 exports.passwordChange = async (name, newPassword, verifyCode) => {
     try {
       const command = new ConfirmForgotPasswordCommand({

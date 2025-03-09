@@ -1,5 +1,6 @@
 const { sendVerification } = require('../services/cognitoService');
 
+// メールアドレスに確認コードを送信
 exports.sendVerifyCode = async (req, res) => {
   try {
     const { name } = req.body;

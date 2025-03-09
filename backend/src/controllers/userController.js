@@ -1,5 +1,6 @@
 const { signUpUser, signInUser, passwordChange } = require('../services/cognitoService');
 
+// ユーザー登録
 exports.signUp = async (req, res) => {
   try {
     const { email, name, password } = req.body;
@@ -10,6 +11,7 @@ exports.signUp = async (req, res) => {
   }
 };
 
+// ログイン
 exports.signIn = async (req, res) => {
   try {
     const { name, password } = req.body;
@@ -20,6 +22,7 @@ exports.signIn = async (req, res) => {
   }
 };
 
+// パスワード変更
 exports.changePassword = async (req, res) => {
   try {
     const { name, newPassword, verifyCode } = req.body;

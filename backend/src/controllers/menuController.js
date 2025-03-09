@@ -4,13 +4,13 @@ const { checkIfCanMakeRecipe } = require('../services/genAIService');
 const axios = require('axios');
 
 
-
+// レシピを推薦
 exports.recommend = async (req, res) => {
     try {
         const { request, username, mode, menucount } = req.body;
 
         // Flask APIサーバーにリクエストを送信
-        const response = await axios.post(`${process.env.RECOMMENDATION_API_URL}/search`, { query: request, menucount: menucount} );
+        const response = await axios.post(`${process.env.RECOMMENDATION_API_URL}/menu/recommend`, { query: request, menucount: menucount} );
         const recipe_ids = response.data['data'];
 
         // ユーザーの食材をすべて取得（名前と期限のみ）
@@ -63,6 +63,7 @@ exports.recommend = async (req, res) => {
             menus: recommendedRecipes,
         });
     } catch (error) {
+        console.log(error);
         res.status(500).json({ code: 500, message: error.message });
     }
 };

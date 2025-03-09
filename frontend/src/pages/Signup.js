@@ -16,6 +16,7 @@ export default function Signup() {
         mode: 'onChange',
     });
 
+    // アカウント作成
     const registerAccount = async (data) => {
         try {
             const response = await fetch(`${process.env.REACT_APP_API_PATH}/user/register`, {

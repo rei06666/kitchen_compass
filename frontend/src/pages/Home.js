@@ -7,8 +7,7 @@ import app_logo from "../image/kitchen_compass_logo.png";
 
 function Home() {
     const [pageName, setPageName] = useState("ingredients");
-    const name = "naruserei";
-    // const name = localStorage.getItem('kitchenCompassUserName');
+    const name = localStorage.getItem('kitchenCompassUserName');
 
     return (
         <div>
@@ -16,6 +15,7 @@ function Home() {
             <Sidebar src={app_logo} name={name} pageName={pageName} handlePageName={setPageName}/>
             {/* モバイルで表示する */}
             <Underbar pageName={pageName} handlePageName={setPageName} />
+            {/* ページの表示 */}
             {pageName === "ingredients" && <Ingredients name={name} />}
             {pageName === "cooking" && <Cooking name={name} />}
         </div>

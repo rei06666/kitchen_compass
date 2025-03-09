@@ -14,11 +14,19 @@ app.listen(port, () => {
 })
 
 app.use(express.json()); // JSONリクエストを扱えるようにする
-// app.use(verifyToken); // トークンの検証ミドルウェアを使用
+
+// ルーティング
+// ユーザー関連のルーティング
 app.use(`/api/${process.env.API_VERSION}/user`, userRoutes); 
+
+// パスワードリセット関連のルーティング
 app.use(`/api/${process.env.API_VERSION}/verify-code`, verifyCodeRoutes); 
-app.use(`/api/${process.env.API_VERSION}/ingredient`, ingredientRoutes); 
-app.use(`/api/${process.env.API_VERSION}/menu`, menuRoutes); 
+
+// 食材関連のルーティング
+app.use(`/api/${process.env.API_VERSION}/ingredient`, verifyToken, ingredientRoutes); 
+
+// メニュー関連のルーティング
+app.use(`/api/${process.env.API_VERSION}/menu`, verifyToken, menuRoutes); 
 
 
 module.exports = app;
